@@ -41,3 +41,4 @@ tclsqlite.o
 tsrc/
 .DS_Store
 *.out
+cscope*
