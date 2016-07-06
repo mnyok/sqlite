@@ -2196,7 +2196,7 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
         /* OFF       */ 0,
         /* TRUNCATE  */ 1,
         /* MEMORY    */ 0,
-        /* WAL       */ 0
+        /* WAL       */ 1
       };
       Pager *pPager;   /* Pager associated with pBt */
       needXcommit = 1;

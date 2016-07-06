@@ -6748,7 +6748,13 @@ sqlite3_file *sqlite3PagerJrnlFile(Pager *pPager){
 ** Return the full pathname of the journal file.
 */
 const char *sqlite3PagerJournalname(Pager *pPager){
-  return pPager->zJournal;
+#if SQLITE_OMIT_WAL
+    return pPager->zJournal;
+#else
+    return pPager->pWal ? pPager->zWal : pPager->zJournal;
+#endif
+    
+ 
 }
 
 #ifdef SQLITE_HAS_CODEC
