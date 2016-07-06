@@ -43,12 +43,12 @@ int main(){
     int rc;
     
     sqlite3* db;
-    rc = sqlite3_open_v2("test1.db",&db,SQLITE_OPEN_READWRITE,nil);
+    rc = sqlite3_open_v2("test1-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
     
     check();
 
 
-    sql(db,"attach database 'test2.db' as t2");
+    sql(db,"attach database 'test2-wal.db' as t2");
 
     sql(db,"begin transaction");
     
