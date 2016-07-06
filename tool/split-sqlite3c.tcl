@@ -8,13 +8,13 @@
 # Splitting files up this way allows them to be used with older compilers
 # that cannot handle really long source files.
 #
-set MAX 32768    ;# Maximum number of lines per file.
+set MAX 5000    ;# Maximum number of lines per file.
 
 set BEGIN {^/\*+ Begin file ([a-zA-Z0-9_.]+) \*+/}
 set END   {^/\*+ End of %s \*+/}
 
 set in [open sqlite3.c]
-set out1 [open sqlite3-all.c w]
+set out1 [open splited/sqlite3-all.c w]
 
 # Copy the header from sqlite3.c into sqlite3-all.c
 #
@@ -47,7 +47,7 @@ set filecnt 0
 proc write_one_file {content} {
   global filecnt
   incr filecnt
-  set out [open sqlite3-$filecnt.c w]
+  set out [open splited/sqlite3-$filecnt.c w]
   puts -nonewline $out $content
   close $out
   puts $::out1 "#include \"sqlite3-$filecnt.c\""

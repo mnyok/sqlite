@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F691E1091D2D178200C93504 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E1081D2D178200C93504 /* main.c */; };
+		F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E3421D2D20F700C93504 /* sqlite3-all.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,155 @@
 /* Begin PBXFileReference section */
 		F691E1051D2D178200C93504 /* sqlite_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sqlite_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		F691E1081D2D178200C93504 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		F691E2AC1D2D200700C93504 /* alter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alter.c; sourceTree = "<group>"; };
+		F691E2AD1D2D200700C93504 /* analyze.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = analyze.c; sourceTree = "<group>"; };
+		F691E2AE1D2D200700C93504 /* attach.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = attach.c; sourceTree = "<group>"; };
+		F691E2AF1D2D200700C93504 /* auth.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = auth.c; sourceTree = "<group>"; };
+		F691E2B01D2D200700C93504 /* backup.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = backup.c; sourceTree = "<group>"; };
+		F691E2B11D2D200700C93504 /* bitvec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bitvec.c; sourceTree = "<group>"; };
+		F691E2B21D2D200700C93504 /* btmutex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = btmutex.c; sourceTree = "<group>"; };
+		F691E2B31D2D200700C93504 /* btree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = btree.c; sourceTree = "<group>"; };
+		F691E2B41D2D200700C93504 /* btree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = btree.h; sourceTree = "<group>"; };
+		F691E2B51D2D200700C93504 /* btreeInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = btreeInt.h; sourceTree = "<group>"; };
+		F691E2B61D2D200700C93504 /* build.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = build.c; sourceTree = "<group>"; };
+		F691E2B71D2D200700C93504 /* callback.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = callback.c; sourceTree = "<group>"; };
+		F691E2B81D2D200700C93504 /* complete.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = complete.c; sourceTree = "<group>"; };
+		F691E2B91D2D200700C93504 /* ctime.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ctime.c; sourceTree = "<group>"; };
+		F691E2BA1D2D200700C93504 /* date.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = date.c; sourceTree = "<group>"; };
+		F691E2BB1D2D200700C93504 /* dbstat.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dbstat.c; sourceTree = "<group>"; };
+		F691E2BC1D2D200700C93504 /* delete.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = delete.c; sourceTree = "<group>"; };
+		F691E2BD1D2D200700C93504 /* expr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = expr.c; sourceTree = "<group>"; };
+		F691E2BE1D2D200700C93504 /* fault.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fault.c; sourceTree = "<group>"; };
+		F691E2BF1D2D200700C93504 /* fkey.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fkey.c; sourceTree = "<group>"; };
+		F691E2C01D2D200700C93504 /* func.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = func.c; sourceTree = "<group>"; };
+		F691E2C11D2D200700C93504 /* global.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = global.c; sourceTree = "<group>"; };
+		F691E2C21D2D200700C93504 /* hash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = hash.c; sourceTree = "<group>"; };
+		F691E2C31D2D200700C93504 /* hash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
+		F691E2C41D2D200700C93504 /* hwtime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hwtime.h; sourceTree = "<group>"; };
+		F691E2C51D2D200700C93504 /* insert.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = insert.c; sourceTree = "<group>"; };
+		F691E2C61D2D200700C93504 /* legacy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = legacy.c; sourceTree = "<group>"; };
+		F691E2C71D2D200700C93504 /* loadext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = loadext.c; sourceTree = "<group>"; };
+		F691E2C81D2D200700C93504 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		F691E2C91D2D200700C93504 /* malloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = malloc.c; sourceTree = "<group>"; };
+		F691E2CA1D2D200700C93504 /* mem0.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem0.c; sourceTree = "<group>"; };
+		F691E2CB1D2D200700C93504 /* mem1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem1.c; sourceTree = "<group>"; };
+		F691E2CC1D2D200700C93504 /* mem2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem2.c; sourceTree = "<group>"; };
+		F691E2CD1D2D200700C93504 /* mem3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem3.c; sourceTree = "<group>"; };
+		F691E2CE1D2D200700C93504 /* mem5.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mem5.c; sourceTree = "<group>"; };
+		F691E2CF1D2D200700C93504 /* memjournal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = memjournal.c; sourceTree = "<group>"; };
+		F691E2D01D2D200700C93504 /* msvc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = msvc.h; sourceTree = "<group>"; };
+		F691E2D11D2D200700C93504 /* mutex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mutex.c; sourceTree = "<group>"; };
+		F691E2D21D2D200700C93504 /* mutex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mutex.h; sourceTree = "<group>"; };
+		F691E2D31D2D200700C93504 /* mutex_noop.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mutex_noop.c; sourceTree = "<group>"; };
+		F691E2D41D2D200700C93504 /* mutex_unix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mutex_unix.c; sourceTree = "<group>"; };
+		F691E2D51D2D200700C93504 /* mutex_w32.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = mutex_w32.c; sourceTree = "<group>"; };
+		F691E2D61D2D200700C93504 /* notify.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = notify.c; sourceTree = "<group>"; };
+		F691E2D71D2D200700C93504 /* os.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = os.c; sourceTree = "<group>"; };
+		F691E2D81D2D200700C93504 /* os.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = os.h; sourceTree = "<group>"; };
+		F691E2D91D2D200700C93504 /* os_common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = os_common.h; sourceTree = "<group>"; };
+		F691E2DA1D2D200700C93504 /* os_setup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = os_setup.h; sourceTree = "<group>"; };
+		F691E2DB1D2D200700C93504 /* os_unix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = os_unix.c; sourceTree = "<group>"; };
+		F691E2DC1D2D200700C93504 /* os_win.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = os_win.c; sourceTree = "<group>"; };
+		F691E2DD1D2D200700C93504 /* os_win.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = os_win.h; sourceTree = "<group>"; };
+		F691E2DE1D2D200700C93504 /* pager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pager.c; sourceTree = "<group>"; };
+		F691E2DF1D2D200700C93504 /* pager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pager.h; sourceTree = "<group>"; };
+		F691E2E01D2D200700C93504 /* parse.y */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.yacc; path = parse.y; sourceTree = "<group>"; };
+		F691E2E11D2D200700C93504 /* pcache.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pcache.c; sourceTree = "<group>"; };
+		F691E2E21D2D200700C93504 /* pcache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pcache.h; sourceTree = "<group>"; };
+		F691E2E31D2D200700C93504 /* pcache1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pcache1.c; sourceTree = "<group>"; };
+		F691E2E41D2D200700C93504 /* pragma.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pragma.c; sourceTree = "<group>"; };
+		F691E2E51D2D200700C93504 /* pragma.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pragma.h; sourceTree = "<group>"; };
+		F691E2E61D2D200700C93504 /* prepare.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = prepare.c; sourceTree = "<group>"; };
+		F691E2E71D2D200700C93504 /* printf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = printf.c; sourceTree = "<group>"; };
+		F691E2E81D2D200700C93504 /* random.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = random.c; sourceTree = "<group>"; };
+		F691E2E91D2D200700C93504 /* resolve.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = resolve.c; sourceTree = "<group>"; };
+		F691E2EA1D2D200700C93504 /* rowset.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rowset.c; sourceTree = "<group>"; };
+		F691E2EB1D2D200700C93504 /* select.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = select.c; sourceTree = "<group>"; };
+		F691E2EC1D2D200700C93504 /* shell.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shell.c; sourceTree = "<group>"; };
+		F691E2ED1D2D200700C93504 /* sqlite.h.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = sqlite.h.in; sourceTree = "<group>"; };
+		F691E2EE1D2D200700C93504 /* sqlite3.rc */ = {isa = PBXFileReference; lastKnownFileType = text; path = sqlite3.rc; sourceTree = "<group>"; };
+		F691E2EF1D2D200700C93504 /* sqlite3ext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sqlite3ext.h; sourceTree = "<group>"; };
+		F691E2F01D2D200700C93504 /* sqliteInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sqliteInt.h; sourceTree = "<group>"; };
+		F691E2F11D2D200700C93504 /* sqliteLimit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sqliteLimit.h; sourceTree = "<group>"; };
+		F691E2F21D2D200700C93504 /* status.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = status.c; sourceTree = "<group>"; };
+		F691E2F31D2D200700C93504 /* table.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = table.c; sourceTree = "<group>"; };
+		F691E2F41D2D200700C93504 /* tclsqlite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tclsqlite.c; sourceTree = "<group>"; };
+		F691E2F51D2D200700C93504 /* test1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test1.c; sourceTree = "<group>"; };
+		F691E2F61D2D200700C93504 /* test2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test2.c; sourceTree = "<group>"; };
+		F691E2F71D2D200700C93504 /* test3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test3.c; sourceTree = "<group>"; };
+		F691E2F81D2D200700C93504 /* test4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test4.c; sourceTree = "<group>"; };
+		F691E2F91D2D200700C93504 /* test5.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test5.c; sourceTree = "<group>"; };
+		F691E2FA1D2D200700C93504 /* test6.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test6.c; sourceTree = "<group>"; };
+		F691E2FB1D2D200700C93504 /* test7.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test7.c; sourceTree = "<group>"; };
+		F691E2FC1D2D200700C93504 /* test8.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test8.c; sourceTree = "<group>"; };
+		F691E2FD1D2D200700C93504 /* test9.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test9.c; sourceTree = "<group>"; };
+		F691E2FE1D2D200700C93504 /* test_async.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_async.c; sourceTree = "<group>"; };
+		F691E2FF1D2D200700C93504 /* test_autoext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_autoext.c; sourceTree = "<group>"; };
+		F691E3001D2D200700C93504 /* test_backup.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_backup.c; sourceTree = "<group>"; };
+		F691E3011D2D200700C93504 /* test_bestindex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_bestindex.c; sourceTree = "<group>"; };
+		F691E3021D2D200700C93504 /* test_blob.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_blob.c; sourceTree = "<group>"; };
+		F691E3031D2D200700C93504 /* test_btree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_btree.c; sourceTree = "<group>"; };
+		F691E3041D2D200700C93504 /* test_config.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_config.c; sourceTree = "<group>"; };
+		F691E3051D2D200800C93504 /* test_demovfs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_demovfs.c; sourceTree = "<group>"; };
+		F691E3061D2D200800C93504 /* test_devsym.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_devsym.c; sourceTree = "<group>"; };
+		F691E3071D2D200800C93504 /* test_fs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_fs.c; sourceTree = "<group>"; };
+		F691E3081D2D200800C93504 /* test_func.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_func.c; sourceTree = "<group>"; };
+		F691E3091D2D200800C93504 /* test_hexio.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_hexio.c; sourceTree = "<group>"; };
+		F691E30A1D2D200800C93504 /* test_init.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_init.c; sourceTree = "<group>"; };
+		F691E30B1D2D200800C93504 /* test_intarray.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_intarray.c; sourceTree = "<group>"; };
+		F691E30C1D2D200800C93504 /* test_intarray.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_intarray.h; sourceTree = "<group>"; };
+		F691E30D1D2D200800C93504 /* test_journal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_journal.c; sourceTree = "<group>"; };
+		F691E30E1D2D200800C93504 /* test_loadext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_loadext.c; sourceTree = "<group>"; };
+		F691E30F1D2D200800C93504 /* test_malloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_malloc.c; sourceTree = "<group>"; };
+		F691E3101D2D200800C93504 /* test_multiplex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_multiplex.c; sourceTree = "<group>"; };
+		F691E3111D2D200800C93504 /* test_multiplex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_multiplex.h; sourceTree = "<group>"; };
+		F691E3121D2D200800C93504 /* test_mutex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_mutex.c; sourceTree = "<group>"; };
+		F691E3131D2D200800C93504 /* test_onefile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_onefile.c; sourceTree = "<group>"; };
+		F691E3141D2D200800C93504 /* test_osinst.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_osinst.c; sourceTree = "<group>"; };
+		F691E3151D2D200800C93504 /* test_pcache.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_pcache.c; sourceTree = "<group>"; };
+		F691E3161D2D200800C93504 /* test_quota.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_quota.c; sourceTree = "<group>"; };
+		F691E3171D2D200800C93504 /* test_quota.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_quota.h; sourceTree = "<group>"; };
+		F691E3181D2D200800C93504 /* test_rtree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_rtree.c; sourceTree = "<group>"; };
+		F691E3191D2D200800C93504 /* test_schema.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_schema.c; sourceTree = "<group>"; };
+		F691E31A1D2D200800C93504 /* test_server.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_server.c; sourceTree = "<group>"; };
+		F691E31B1D2D200800C93504 /* test_sqllog.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_sqllog.c; sourceTree = "<group>"; };
+		F691E31C1D2D200800C93504 /* test_superlock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_superlock.c; sourceTree = "<group>"; };
+		F691E31D1D2D200800C93504 /* test_syscall.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_syscall.c; sourceTree = "<group>"; };
+		F691E31E1D2D200800C93504 /* test_tclvar.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_tclvar.c; sourceTree = "<group>"; };
+		F691E31F1D2D200800C93504 /* test_thread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_thread.c; sourceTree = "<group>"; };
+		F691E3201D2D200800C93504 /* test_vfs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_vfs.c; sourceTree = "<group>"; };
+		F691E3211D2D200800C93504 /* test_vfstrace.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_vfstrace.c; sourceTree = "<group>"; };
+		F691E3221D2D200800C93504 /* test_windirent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_windirent.c; sourceTree = "<group>"; };
+		F691E3231D2D200800C93504 /* test_windirent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_windirent.h; sourceTree = "<group>"; };
+		F691E3241D2D200800C93504 /* test_wsd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_wsd.c; sourceTree = "<group>"; };
+		F691E3251D2D200800C93504 /* threads.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = threads.c; sourceTree = "<group>"; };
+		F691E3261D2D200800C93504 /* tokenize.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tokenize.c; sourceTree = "<group>"; };
+		F691E3271D2D200800C93504 /* treeview.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = treeview.c; sourceTree = "<group>"; };
+		F691E3281D2D200800C93504 /* trigger.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = trigger.c; sourceTree = "<group>"; };
+		F691E3291D2D200800C93504 /* update.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = update.c; sourceTree = "<group>"; };
+		F691E32A1D2D200800C93504 /* utf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = utf.c; sourceTree = "<group>"; };
+		F691E32B1D2D200800C93504 /* util.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
+		F691E32C1D2D200800C93504 /* vacuum.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vacuum.c; sourceTree = "<group>"; };
+		F691E32D1D2D200800C93504 /* vdbe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbe.c; sourceTree = "<group>"; };
+		F691E32E1D2D200800C93504 /* vdbe.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vdbe.h; sourceTree = "<group>"; };
+		F691E32F1D2D200800C93504 /* vdbeapi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbeapi.c; sourceTree = "<group>"; };
+		F691E3301D2D200800C93504 /* vdbeaux.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbeaux.c; sourceTree = "<group>"; };
+		F691E3311D2D200800C93504 /* vdbeblob.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbeblob.c; sourceTree = "<group>"; };
+		F691E3321D2D200800C93504 /* vdbeInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vdbeInt.h; sourceTree = "<group>"; };
+		F691E3331D2D200800C93504 /* vdbemem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbemem.c; sourceTree = "<group>"; };
+		F691E3341D2D200800C93504 /* vdbesort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbesort.c; sourceTree = "<group>"; };
+		F691E3351D2D200800C93504 /* vdbetrace.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vdbetrace.c; sourceTree = "<group>"; };
+		F691E3361D2D200800C93504 /* vtab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vtab.c; sourceTree = "<group>"; };
+		F691E3371D2D200800C93504 /* vxworks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vxworks.h; sourceTree = "<group>"; };
+		F691E3381D2D200800C93504 /* wal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = wal.c; sourceTree = "<group>"; };
+		F691E3391D2D200800C93504 /* wal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wal.h; sourceTree = "<group>"; };
+		F691E33A1D2D200800C93504 /* walker.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = walker.c; sourceTree = "<group>"; };
+		F691E33B1D2D200800C93504 /* where.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = where.c; sourceTree = "<group>"; };
+		F691E33C1D2D200800C93504 /* wherecode.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = wherecode.c; sourceTree = "<group>"; };
+		F691E33D1D2D200800C93504 /* whereexpr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = whereexpr.c; sourceTree = "<group>"; };
+		F691E33E1D2D200800C93504 /* whereInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = whereInt.h; sourceTree = "<group>"; };
+		F691E3401D2D206400C93504 /* sqlite3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../sqlite3.h; sourceTree = "<group>"; };
+		F691E3421D2D20F700C93504 /* sqlite3-all.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "sqlite3-all.c"; path = "../../splited/sqlite3-all.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +191,8 @@
 		F691E0FC1D2D178200C93504 = {
 			isa = PBXGroup;
 			children = (
+				F691E3411D2D20DA00C93504 /* splited */,
+				F691E2AB1D2D200700C93504 /* src */,
 				F691E1071D2D178200C93504 /* sqlite_test */,
 				F691E1061D2D178200C93504 /* Products */,
 			);
@@ -62,6 +214,170 @@
 			path = sqlite_test;
 			sourceTree = "<group>";
 		};
+		F691E2AB1D2D200700C93504 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				F691E3401D2D206400C93504 /* sqlite3.h */,
+				F691E2AC1D2D200700C93504 /* alter.c */,
+				F691E2AD1D2D200700C93504 /* analyze.c */,
+				F691E2AE1D2D200700C93504 /* attach.c */,
+				F691E2AF1D2D200700C93504 /* auth.c */,
+				F691E2B01D2D200700C93504 /* backup.c */,
+				F691E2B11D2D200700C93504 /* bitvec.c */,
+				F691E2B21D2D200700C93504 /* btmutex.c */,
+				F691E2B31D2D200700C93504 /* btree.c */,
+				F691E2B41D2D200700C93504 /* btree.h */,
+				F691E2B51D2D200700C93504 /* btreeInt.h */,
+				F691E2B61D2D200700C93504 /* build.c */,
+				F691E2B71D2D200700C93504 /* callback.c */,
+				F691E2B81D2D200700C93504 /* complete.c */,
+				F691E2B91D2D200700C93504 /* ctime.c */,
+				F691E2BA1D2D200700C93504 /* date.c */,
+				F691E2BB1D2D200700C93504 /* dbstat.c */,
+				F691E2BC1D2D200700C93504 /* delete.c */,
+				F691E2BD1D2D200700C93504 /* expr.c */,
+				F691E2BE1D2D200700C93504 /* fault.c */,
+				F691E2BF1D2D200700C93504 /* fkey.c */,
+				F691E2C01D2D200700C93504 /* func.c */,
+				F691E2C11D2D200700C93504 /* global.c */,
+				F691E2C21D2D200700C93504 /* hash.c */,
+				F691E2C31D2D200700C93504 /* hash.h */,
+				F691E2C41D2D200700C93504 /* hwtime.h */,
+				F691E2C51D2D200700C93504 /* insert.c */,
+				F691E2C61D2D200700C93504 /* legacy.c */,
+				F691E2C71D2D200700C93504 /* loadext.c */,
+				F691E2C81D2D200700C93504 /* main.c */,
+				F691E2C91D2D200700C93504 /* malloc.c */,
+				F691E2CA1D2D200700C93504 /* mem0.c */,
+				F691E2CB1D2D200700C93504 /* mem1.c */,
+				F691E2CC1D2D200700C93504 /* mem2.c */,
+				F691E2CD1D2D200700C93504 /* mem3.c */,
+				F691E2CE1D2D200700C93504 /* mem5.c */,
+				F691E2CF1D2D200700C93504 /* memjournal.c */,
+				F691E2D01D2D200700C93504 /* msvc.h */,
+				F691E2D11D2D200700C93504 /* mutex.c */,
+				F691E2D21D2D200700C93504 /* mutex.h */,
+				F691E2D31D2D200700C93504 /* mutex_noop.c */,
+				F691E2D41D2D200700C93504 /* mutex_unix.c */,
+				F691E2D51D2D200700C93504 /* mutex_w32.c */,
+				F691E2D61D2D200700C93504 /* notify.c */,
+				F691E2D71D2D200700C93504 /* os.c */,
+				F691E2D81D2D200700C93504 /* os.h */,
+				F691E2D91D2D200700C93504 /* os_common.h */,
+				F691E2DA1D2D200700C93504 /* os_setup.h */,
+				F691E2DB1D2D200700C93504 /* os_unix.c */,
+				F691E2DC1D2D200700C93504 /* os_win.c */,
+				F691E2DD1D2D200700C93504 /* os_win.h */,
+				F691E2DE1D2D200700C93504 /* pager.c */,
+				F691E2DF1D2D200700C93504 /* pager.h */,
+				F691E2E01D2D200700C93504 /* parse.y */,
+				F691E2E11D2D200700C93504 /* pcache.c */,
+				F691E2E21D2D200700C93504 /* pcache.h */,
+				F691E2E31D2D200700C93504 /* pcache1.c */,
+				F691E2E41D2D200700C93504 /* pragma.c */,
+				F691E2E51D2D200700C93504 /* pragma.h */,
+				F691E2E61D2D200700C93504 /* prepare.c */,
+				F691E2E71D2D200700C93504 /* printf.c */,
+				F691E2E81D2D200700C93504 /* random.c */,
+				F691E2E91D2D200700C93504 /* resolve.c */,
+				F691E2EA1D2D200700C93504 /* rowset.c */,
+				F691E2EB1D2D200700C93504 /* select.c */,
+				F691E2EC1D2D200700C93504 /* shell.c */,
+				F691E2ED1D2D200700C93504 /* sqlite.h.in */,
+				F691E2EE1D2D200700C93504 /* sqlite3.rc */,
+				F691E2EF1D2D200700C93504 /* sqlite3ext.h */,
+				F691E2F01D2D200700C93504 /* sqliteInt.h */,
+				F691E2F11D2D200700C93504 /* sqliteLimit.h */,
+				F691E2F21D2D200700C93504 /* status.c */,
+				F691E2F31D2D200700C93504 /* table.c */,
+				F691E2F41D2D200700C93504 /* tclsqlite.c */,
+				F691E2F51D2D200700C93504 /* test1.c */,
+				F691E2F61D2D200700C93504 /* test2.c */,
+				F691E2F71D2D200700C93504 /* test3.c */,
+				F691E2F81D2D200700C93504 /* test4.c */,
+				F691E2F91D2D200700C93504 /* test5.c */,
+				F691E2FA1D2D200700C93504 /* test6.c */,
+				F691E2FB1D2D200700C93504 /* test7.c */,
+				F691E2FC1D2D200700C93504 /* test8.c */,
+				F691E2FD1D2D200700C93504 /* test9.c */,
+				F691E2FE1D2D200700C93504 /* test_async.c */,
+				F691E2FF1D2D200700C93504 /* test_autoext.c */,
+				F691E3001D2D200700C93504 /* test_backup.c */,
+				F691E3011D2D200700C93504 /* test_bestindex.c */,
+				F691E3021D2D200700C93504 /* test_blob.c */,
+				F691E3031D2D200700C93504 /* test_btree.c */,
+				F691E3041D2D200700C93504 /* test_config.c */,
+				F691E3051D2D200800C93504 /* test_demovfs.c */,
+				F691E3061D2D200800C93504 /* test_devsym.c */,
+				F691E3071D2D200800C93504 /* test_fs.c */,
+				F691E3081D2D200800C93504 /* test_func.c */,
+				F691E3091D2D200800C93504 /* test_hexio.c */,
+				F691E30A1D2D200800C93504 /* test_init.c */,
+				F691E30B1D2D200800C93504 /* test_intarray.c */,
+				F691E30C1D2D200800C93504 /* test_intarray.h */,
+				F691E30D1D2D200800C93504 /* test_journal.c */,
+				F691E30E1D2D200800C93504 /* test_loadext.c */,
+				F691E30F1D2D200800C93504 /* test_malloc.c */,
+				F691E3101D2D200800C93504 /* test_multiplex.c */,
+				F691E3111D2D200800C93504 /* test_multiplex.h */,
+				F691E3121D2D200800C93504 /* test_mutex.c */,
+				F691E3131D2D200800C93504 /* test_onefile.c */,
+				F691E3141D2D200800C93504 /* test_osinst.c */,
+				F691E3151D2D200800C93504 /* test_pcache.c */,
+				F691E3161D2D200800C93504 /* test_quota.c */,
+				F691E3171D2D200800C93504 /* test_quota.h */,
+				F691E3181D2D200800C93504 /* test_rtree.c */,
+				F691E3191D2D200800C93504 /* test_schema.c */,
+				F691E31A1D2D200800C93504 /* test_server.c */,
+				F691E31B1D2D200800C93504 /* test_sqllog.c */,
+				F691E31C1D2D200800C93504 /* test_superlock.c */,
+				F691E31D1D2D200800C93504 /* test_syscall.c */,
+				F691E31E1D2D200800C93504 /* test_tclvar.c */,
+				F691E31F1D2D200800C93504 /* test_thread.c */,
+				F691E3201D2D200800C93504 /* test_vfs.c */,
+				F691E3211D2D200800C93504 /* test_vfstrace.c */,
+				F691E3221D2D200800C93504 /* test_windirent.c */,
+				F691E3231D2D200800C93504 /* test_windirent.h */,
+				F691E3241D2D200800C93504 /* test_wsd.c */,
+				F691E3251D2D200800C93504 /* threads.c */,
+				F691E3261D2D200800C93504 /* tokenize.c */,
+				F691E3271D2D200800C93504 /* treeview.c */,
+				F691E3281D2D200800C93504 /* trigger.c */,
+				F691E3291D2D200800C93504 /* update.c */,
+				F691E32A1D2D200800C93504 /* utf.c */,
+				F691E32B1D2D200800C93504 /* util.c */,
+				F691E32C1D2D200800C93504 /* vacuum.c */,
+				F691E32D1D2D200800C93504 /* vdbe.c */,
+				F691E32E1D2D200800C93504 /* vdbe.h */,
+				F691E32F1D2D200800C93504 /* vdbeapi.c */,
+				F691E3301D2D200800C93504 /* vdbeaux.c */,
+				F691E3311D2D200800C93504 /* vdbeblob.c */,
+				F691E3321D2D200800C93504 /* vdbeInt.h */,
+				F691E3331D2D200800C93504 /* vdbemem.c */,
+				F691E3341D2D200800C93504 /* vdbesort.c */,
+				F691E3351D2D200800C93504 /* vdbetrace.c */,
+				F691E3361D2D200800C93504 /* vtab.c */,
+				F691E3371D2D200800C93504 /* vxworks.h */,
+				F691E3381D2D200800C93504 /* wal.c */,
+				F691E3391D2D200800C93504 /* wal.h */,
+				F691E33A1D2D200800C93504 /* walker.c */,
+				F691E33B1D2D200800C93504 /* where.c */,
+				F691E33C1D2D200800C93504 /* wherecode.c */,
+				F691E33D1D2D200800C93504 /* whereexpr.c */,
+				F691E33E1D2D200800C93504 /* whereInt.h */,
+			);
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+		F691E3411D2D20DA00C93504 /* splited */ = {
+			isa = PBXGroup;
+			children = (
+				F691E3421D2D20F700C93504 /* sqlite3-all.c */,
+			);
+			name = splited;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -69,6 +385,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F691E10C1D2D178200C93504 /* Build configuration list for PBXNativeTarget "sqlite_test" */;
 			buildPhases = (
+				F691E33F1D2D201200C93504 /* Make Project */,
+				F691E3441D2D216800C93504 /* Construct Splited Sources */,
 				F691E1011D2D178200C93504 /* Sources */,
 				F691E1021D2D178200C93504 /* Frameworks */,
 				F691E1031D2D178200C93504 /* CopyFiles */,
@@ -113,12 +431,44 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		F691E33F1D2D201200C93504 /* Make Project */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Make Project";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make -j8 ${HOME}/Dropbox/ug/sqlite";
+		};
+		F691E3441D2D216800C93504 /* Construct Splited Sources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Construct Splited Sources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd ${HOME}/Dropbox/ug/sqlite\ntclsh ${HOME}/Dropbox/ug/sqlite/tool/split-sqlite3c.tcl";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F691E1011D2D178200C93504 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				F691E1091D2D178200C93504 /* main.c in Sources */,
+				F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,6 +559,7 @@
 		F691E10D1D2D178200C93504 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /Users/Purple/Dropbox/ug/sqlite;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -216,6 +567,7 @@
 		F691E10E1D2D178200C93504 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /Users/Purple/Dropbox/ug/sqlite;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -239,6 +591,7 @@
 				F691E10E1D2D178200C93504 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
