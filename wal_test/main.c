@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-// #include "../splited/sqlite3-all.c"
+#include <math.h>
 #include "../sqlite3.h"
 
 
@@ -31,6 +31,54 @@ int sql(sqlite3* db, const char * sql){
     return rc;
 }
 
+int sql_insert_rand(sqlite3* db, const char * table){
+    int rc;
+    int i;
+    char buffer[100];
+    char sql[1000] = "insert into ";
+
+    strcat(sql, table);
+    strcat(sql, " values (");
+
+    for(i = 0; i < 3; i++){
+        sprintf(buffer, "%d", rand() % 100);
+        strcat(sql, buffer);
+        if(i != 2){
+            strcat(sql, ",");
+        }
+    }
+    strcat(sql, ")");
+
+    // printf("%s\n", sql);
+
+    rc = sqlite3_exec(db, sql, nil, nil, nil);
+
+    check();
+
+    return rc;
+}
+
+int sql_update_rand(sqlite3* db, const char * table){
+    int rc;
+    int i;
+    char buffer[100];
+    char sql[1000] = "update ";
+
+    strcat(sql, table);
+    strcat(sql, " set a = ");
+
+    sprintf(buffer, "%d", rand() % 100);
+    strcat(sql, buffer);
+
+    // printf("%s\n", sql);
+
+    rc = sqlite3_exec(db, sql, nil, nil, nil);
+
+    check();
+
+    return rc;
+}
+
 void change_directory_to_source_folder(){
 
     chdir(SRC_PATH);
@@ -42,6 +90,9 @@ int main(){
     // change_directory_to_source_folder();
 
     int rc;
+    int i;
+
+    srand((unsigned)time(NULL) + (unsigned)getpid());
 
     sqlite3* db;
     rc = sqlite3_open_v2("test1-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
@@ -51,14 +102,28 @@ int main(){
 
     sql(db,"attach database 'test2-wal.db' as t2");
 
-    sql(db,"begin transaction");
+    for(i = 0; i < 1000; i++){
+        sql(db,"begin transaction");
 
-    sql(db,"insert into tb1 values (1,2,3)");
+        // sql(db,"insert into tb1 values (1,2,3)");
+        //
+        // sql(db,"insert into t2.tb2 values (3,4,5)");
+        // sql(db,"update tb1 set a = 2 where a = 1");
 
-    sql(db,"insert into t2.tb2 values (3,4,5)");
+        sql_insert_rand(db, "tb1");
+        sql_insert_rand(db, "tb1");
+        sql_insert_rand(db, "t2.tb2");
+        sql_insert_rand(db, "t2.tb2");
 
+        sql_update_rand(db, "tb1");
+
+        // exit(-1);
 
     sql(db,"commit transaction");
+    }
+
+    sql(db,"delete from tb1");
+    sql(db,"delete from t2.tb2");
 
     sqlite3_close(db);
     return 0;
