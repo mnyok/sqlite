@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F63E94AC1D2FB63700953C78 /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = F63E94AA1D2FB63700953C78 /* common.c */; };
 		F691E1091D2D178200C93504 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E1081D2D178200C93504 /* main.c */; };
 		F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E3421D2D20F700C93504 /* sqlite3-all.c */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F63E94AA1D2FB63700953C78 /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common.c; path = ../../common/common.c; sourceTree = "<group>"; };
+		F63E94AB1D2FB63700953C78 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../../common/common.h; sourceTree = "<group>"; };
 		F691E1051D2D178200C93504 /* sqlite_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sqlite_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		F691E1081D2D178200C93504 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F691E2AC1D2D200700C93504 /* alter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alter.c; sourceTree = "<group>"; };
@@ -227,10 +230,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F63E94A91D2FB62100953C78 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				F63E94AB1D2FB63700953C78 /* common.h */,
+				F63E94AA1D2FB63700953C78 /* common.c */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
 		F691E0FC1D2D178200C93504 = {
 			isa = PBXGroup;
 			children = (
 				F691E3401D2D206400C93504 /* sqlite3.h */,
+				F63E94A91D2FB62100953C78 /* common */,
 				F691E3411D2D20DA00C93504 /* splited */,
 				F691E2AB1D2D200700C93504 /* src */,
 				F691E1071D2D178200C93504 /* sqlite_test */,
@@ -530,6 +543,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F63E94AC1D2FB63700953C78 /* common.c in Sources */,
 				F691E1091D2D178200C93504 /* main.c in Sources */,
 				F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */,
 			);
