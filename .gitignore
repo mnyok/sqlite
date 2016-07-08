@@ -1,3 +1,6 @@
+*.db-mj*
+*.db-wal
+*.db-journal
 *.xcuserstate
 .libs/
 .target_source
