@@ -22,15 +22,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-13.c"
-            timestampString = "489502482.775897"
+            timestampString = "489665608.846775"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2343"
-            endingLineNumber = "2343"
+            startingLineNumber = "2394"
+            endingLineNumber = "2394"
             landmarkName = "vdbeCommit()"
             landmarkType = "7">
          </BreakpointContent>
