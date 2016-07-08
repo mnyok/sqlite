@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F63E94AC1D2FB63700953C78 /* common.c in Sources */ = {isa = PBXBuildFile; fileRef = F63E94AA1D2FB63700953C78 /* common.c */; };
 		F691E1091D2D178200C93504 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E1081D2D178200C93504 /* main.c */; };
 		F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */ = {isa = PBXBuildFile; fileRef = F691E3421D2D20F700C93504 /* sqlite3-all.c */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F63E94AA1D2FB63700953C78 /* common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = common.c; path = ../../common/common.c; sourceTree = "<group>"; };
+		F63E94AB1D2FB63700953C78 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = ../../common/common.h; sourceTree = "<group>"; };
 		F691E1051D2D178200C93504 /* sqlite_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sqlite_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		F691E1081D2D178200C93504 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F691E2AC1D2D200700C93504 /* alter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = alter.c; sourceTree = "<group>"; };
@@ -214,22 +217,6 @@
 		F691E3691D2D267200C93504 /* sqlite3-37.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-37.c"; path = "../../splited/sqlite3-37.c"; sourceTree = "<group>"; };
 		F691E36A1D2D267200C93504 /* sqlite3-38.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-38.c"; path = "../../splited/sqlite3-38.c"; sourceTree = "<group>"; };
 		F691E36B1D2D267200C93504 /* sqlite3-39.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-39.c"; path = "../../splited/sqlite3-39.c"; sourceTree = "<group>"; };
-		F691E36C1D2D267200C93504 /* sqlite3-40.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-40.c"; path = "../../splited/sqlite3-40.c"; sourceTree = "<group>"; };
-		F691E36D1D2D267200C93504 /* sqlite3-41.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-41.c"; path = "../../splited/sqlite3-41.c"; sourceTree = "<group>"; };
-		F691E36E1D2D267200C93504 /* sqlite3-42.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-42.c"; path = "../../splited/sqlite3-42.c"; sourceTree = "<group>"; };
-		F691E36F1D2D267200C93504 /* sqlite3-43.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-43.c"; path = "../../splited/sqlite3-43.c"; sourceTree = "<group>"; };
-		F691E3701D2D267200C93504 /* sqlite3-44.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-44.c"; path = "../../splited/sqlite3-44.c"; sourceTree = "<group>"; };
-		F691E3711D2D267200C93504 /* sqlite3-45.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-45.c"; path = "../../splited/sqlite3-45.c"; sourceTree = "<group>"; };
-		F691E3721D2D267200C93504 /* sqlite3-46.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-46.c"; path = "../../splited/sqlite3-46.c"; sourceTree = "<group>"; };
-		F691E3731D2D267200C93504 /* sqlite3-47.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-47.c"; path = "../../splited/sqlite3-47.c"; sourceTree = "<group>"; };
-		F691E3741D2D267200C93504 /* sqlite3-48.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-48.c"; path = "../../splited/sqlite3-48.c"; sourceTree = "<group>"; };
-		F691E3751D2D267200C93504 /* sqlite3-49.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-49.c"; path = "../../splited/sqlite3-49.c"; sourceTree = "<group>"; };
-		F691E3761D2D267200C93504 /* sqlite3-50.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-50.c"; path = "../../splited/sqlite3-50.c"; sourceTree = "<group>"; };
-		F691E3771D2D267200C93504 /* sqlite3-51.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-51.c"; path = "../../splited/sqlite3-51.c"; sourceTree = "<group>"; };
-		F691E3781D2D267200C93504 /* sqlite3-52.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-52.c"; path = "../../splited/sqlite3-52.c"; sourceTree = "<group>"; };
-		F691E3791D2D267200C93504 /* sqlite3-53.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-53.c"; path = "../../splited/sqlite3-53.c"; sourceTree = "<group>"; };
-		F691E37A1D2D267200C93504 /* sqlite3-54.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-54.c"; path = "../../splited/sqlite3-54.c"; sourceTree = "<group>"; };
-		F691E37B1D2D267200C93504 /* sqlite3-55.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "sqlite3-55.c"; path = "../../splited/sqlite3-55.c"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -243,10 +230,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F63E94A91D2FB62100953C78 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				F63E94AB1D2FB63700953C78 /* common.h */,
+				F63E94AA1D2FB63700953C78 /* common.c */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
 		F691E0FC1D2D178200C93504 = {
 			isa = PBXGroup;
 			children = (
 				F691E3401D2D206400C93504 /* sqlite3.h */,
+				F63E94A91D2FB62100953C78 /* common */,
 				F691E3411D2D20DA00C93504 /* splited */,
 				F691E2AB1D2D200700C93504 /* src */,
 				F691E1071D2D178200C93504 /* sqlite_test */,
@@ -468,22 +465,6 @@
 				F691E3691D2D267200C93504 /* sqlite3-37.c */,
 				F691E36A1D2D267200C93504 /* sqlite3-38.c */,
 				F691E36B1D2D267200C93504 /* sqlite3-39.c */,
-				F691E36C1D2D267200C93504 /* sqlite3-40.c */,
-				F691E36D1D2D267200C93504 /* sqlite3-41.c */,
-				F691E36E1D2D267200C93504 /* sqlite3-42.c */,
-				F691E36F1D2D267200C93504 /* sqlite3-43.c */,
-				F691E3701D2D267200C93504 /* sqlite3-44.c */,
-				F691E3711D2D267200C93504 /* sqlite3-45.c */,
-				F691E3721D2D267200C93504 /* sqlite3-46.c */,
-				F691E3731D2D267200C93504 /* sqlite3-47.c */,
-				F691E3741D2D267200C93504 /* sqlite3-48.c */,
-				F691E3751D2D267200C93504 /* sqlite3-49.c */,
-				F691E3761D2D267200C93504 /* sqlite3-50.c */,
-				F691E3771D2D267200C93504 /* sqlite3-51.c */,
-				F691E3781D2D267200C93504 /* sqlite3-52.c */,
-				F691E3791D2D267200C93504 /* sqlite3-53.c */,
-				F691E37A1D2D267200C93504 /* sqlite3-54.c */,
-				F691E37B1D2D267200C93504 /* sqlite3-55.c */,
 			);
 			name = splited;
 			sourceTree = "<group>";
@@ -553,7 +534,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd ${HOME}/Dropbox/ug/sqlite;\n\nmake -j8 | grep 'Nothing' &> /dev/null\nif [ $? == 0 ]; then\n\necho \"Nothing to make\";\n\nelse\n\necho \"Split again\";\n\ntclsh tool/split-sqlite3c.tcl\n\nfi";
+			shellScript = "\n#cd ${HOME}/Dropbox/ug/sqlite;\n\n#make -j8 | grep 'Nothing' &> /dev/null\n#if [ $? == 0 ]; then\n\n#echo \"Nothing to make\";\n\n#else\n\n#echo \"Split again\";\n\n#tclsh tool/split-sqlite3c.tcl\n\n#fi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -562,6 +543,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F63E94AC1D2FB63700953C78 /* common.c in Sources */,
 				F691E1091D2D178200C93504 /* main.c in Sources */,
 				F691E3431D2D20F700C93504 /* sqlite3-all.c in Sources */,
 			);
