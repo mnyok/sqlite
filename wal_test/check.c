@@ -1,35 +1,5 @@
-//
-//  main.c
-//  sqlite_test
-//
-//  Created by 김성민 on 2016. 7. 6..
-//  Copyright © 2016년 Purple. All rights reserved.
-//
+#include "../common/common.c"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <math.h>
-#include "../sqlite3.h"
-
-
-#define SRC_PATH  "/Users/Purple/Dropbox/ug/sqlite/xcode/sqlite_test/sqlite_test"
-
-
-#define nil NULL
-
-#define check() if(rc != SQLITE_OK){puts(sqlite3_errmsg(db)); puts("sqlite close"); sqlite3_close(db); exit(1);}
-
-int sql(sqlite3* db, const char * sql){
-    int rc;
-
-    rc = sqlite3_exec(db, sql, nil, nil, nil);
-
-    check();
-
-    return rc;
-}
 
 /* Handle callback from sql
 ** argc : number of data
@@ -63,7 +33,7 @@ int main(){
 
     check();
 
-    sql(db,"attach database 'test2-wal.db' as t2");
+    sql_execute(db,"attach database 'test2-wal.db' as t2");
 
     rc = sqlite3_exec(db, "select * from (select tb1.a as A, tb1.b as B1, tb1.c as C, t2.tb2.b as B2 from tb1 inner join t2.tb2 on tb1.a = t2.tb2.a) where (C * 2) != (B1 + B2)", callback_sum, &result, nil);
     check();
