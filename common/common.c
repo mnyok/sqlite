@@ -19,10 +19,10 @@ int sql_execute(sqlite3* db, const char * sql){
 
 //insert into table values (a, b, c)
 int sql_insert(sqlite3* db, const char * table, int a, int b, int c){
-    int i;
+//    int i;
     int rc;
     char buffer[100];
-    char sql[1000] = "insert into ";
+    char sql[100] = "insert into ";
 
     strcat(sql, table);
     strcat(sql, " values (");
@@ -50,10 +50,10 @@ int sql_insert(sqlite3* db, const char * table, int a, int b, int c){
 
 //update table set b = b + value where a = key
 int sql_update(sqlite3* db, const char * table, int key, int value){
-    int i;
+//    int i;
     int rc;
     char buffer[100];
-    char sql[1000] = "update ";
+    char sql[100] = "update ";
 
     strcat(sql, table);
     strcat(sql, " set b = b");
@@ -78,7 +78,7 @@ int sql_insert_rand(sqlite3* db, const char * table){
     int rc;
     int i;
     char buffer[100];
-    char sql[1000] = "insert into ";
+    char sql[100] = "insert into ";
 
     strcat(sql, table);
     strcat(sql, " values (");
@@ -102,7 +102,7 @@ int sql_update_rand(sqlite3* db, const char * table){
     int rc;
     //    int i;
     char buffer[100];
-    char sql[1000] = "update ";
+    char sql[100] = "update ";
 
     strcat(sql, table);
     strcat(sql, " set a = ");
