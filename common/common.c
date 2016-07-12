@@ -116,3 +116,7 @@ int sql_update_rand(sqlite3* db, const char * table){
 
     return rc;
 }
+
+void sigkill(){
+    kill(getpid(),SIGKILL);
+}
