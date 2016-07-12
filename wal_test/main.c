@@ -6,14 +6,10 @@
 //  Copyright © 2016년 Purple. All rights reserved.
 //
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <math.h>
-#include "../sqlite3.h"
+#include "../common/common.c"
 
 
+<<<<<<< HEAD
 #define SRC_PATH  "/Users/Purple/Dropbox/ug/sqlite/xcode/sqlite_test/sqlite_test"
 
 
@@ -83,8 +79,20 @@ void change_directory_to_source_folder(){
 
     chdir(SRC_PATH);
 }
+=======
+/* Handle callback from sql
+** argc : number of data
+** argv : data
+** colName : name of data column
+*/
+static int callback_sum(void* sum, int argc, char** argv, char** colName)
+{
+    *(int*)sum += atoi(argv[0]);
+	return 0;
+}
 
-#define nil NULL
+>>>>>>> 2a2f2dd... cherrypick common files
+
 int main(){
 
     // change_directory_to_source_folder();
@@ -99,10 +107,18 @@ int main(){
 
     check();
 
+<<<<<<< HEAD
 
     sql(db,"attach database 'test2-wal.db' as t2");
+=======
+    sql_execute(db,"attach database 'test2-wal.db' as t2");
+
+    sql_execute(db,"delete from tb1");
+    sql_execute(db,"delete from t2.tb2");
+>>>>>>> 2a2f2dd... cherrypick common files
 
     for(i = 0; i < 1000; i++){
+<<<<<<< HEAD
         sql(db,"begin transaction");
 
         // sql(db,"insert into tb1 values (1,2,3)");
@@ -114,9 +130,42 @@ int main(){
         sql_insert_rand(db, "tb1");
         sql_insert_rand(db, "t2.tb2");
         sql_insert_rand(db, "t2.tb2");
+=======
+        insert_data = rand() % 100;
+        before += insert_data * 2;
+        sql_insert(db, "tb1", i, insert_data, insert_data);
+        sql_insert(db, "t2.tb2", i, insert_data, insert_data);
+    }
+    printf("Before sum = %d\n", before);
+
+    int update_value;
+    int update_row;
+    int j = 0;
+    for(i = 0; i < 200; i++){
+        update_row = rand() % 1000;
+        update_value = 1;
+        sql_execute(db,"begin transaction");
+
+        for(j = 0; j < 5; j++){
+            sql_update(db, "tb1", update_row, update_value);
+
+            // if(rand() % 100 < 5){
+            //     printf("%d %d\n", i, j);
+            //     exit(-1);
+            //     // sqlite3_interrupt(db);
+            //     // continue;
+            // }
+
+            sql_update(db, "t2.tb2", update_row, update_value * -1);
+        }
+
+        sql_execute(db,"commit transaction");
+    }
+>>>>>>> 2a2f2dd... cherrypick common files
 
         sql_update_rand(db, "tb1");
 
+<<<<<<< HEAD
         // exit(-1);
 
     sql(db,"commit transaction");
@@ -124,6 +173,10 @@ int main(){
 
     sql(db,"delete from tb1");
     sql(db,"delete from t2.tb2");
+=======
+    // sql_execute(db,"delete from tb1");
+    // sql_execute(db,"delete from t2.tb2");
+>>>>>>> 2a2f2dd... cherrypick common files
 
     sqlite3_close(db);
     return 0;
