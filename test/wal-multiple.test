@@ -1,0 +1,71 @@
+# 2010 February 8
+#
+# The author disclaims copyright to this source code.  In place of
+# a legal notice, here is a blessing:
+#
+#    May you do good and not evil.
+#    May you find forgiveness for yourself and forgive others.
+#    May you share freely, never taking more than you give.
+#
+#***********************************************************************
+# This file implements regression tests for SQLite library.  The
+# focus of this file is testing the operation of the library when
+# recovering a database following a simulated system failure in
+# "PRAGMA journal_mode=WAL" mode.
+#
+
+#
+# These are 'warm-body' tests of database recovery used while developing
+# the WAL code. They serve to prove that a few really simple cases work:
+#
+# walcrash-1.*: Recover a database.
+# walcrash-2.*: Recover a database where the failed transaction spanned more
+#               than one page.
+# walcrash-3.*: Recover multiple databases where the failed transaction
+#               was a multi-file transaction.
+#
+
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+ifcapable !wal {finish_test ; return }
+
+db close
+
+set seed 0
+set REPEATS 1000
+
+# walcrash-3.*
+#
+for {set i 1} {$i < $REPEATS} {incr i} {
+  forcedelete test.db test.db-wal
+  forcedelete test2.db test2.db-wal
+
+    do_test walcrash-3.$i.1 {
+      crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
+        PRAGMA journal_mode = WAL;
+        ATTACH 'test2.db' AS aux;
+        CREATE TABLE t1(a PRIMARY KEY, b);
+        CREATE TABLE aux.t2(a PRIMARY KEY, b);
+        BEGIN;
+          INSERT INTO t1 VALUES(1, 2);
+          INSERT INTO t2 VALUES(1, 2);
+        COMMIT;
+      }
+  } {0 {}}
+
+  do_test walcrash-3.$i.2 {
+    sqlite3 db test.db
+    execsql {
+      ATTACH 'test2.db' AS aux;
+      SELECT * FROM t1 EXCEPT SELECT * FROM t2;
+    }
+  } {}
+  do_test walcrash-3.$i.3 { execsql { PRAGMA main.integrity_check } } {ok}
+  do_test walcrash-3.$i.4 { execsql { PRAGMA aux.integrity_check  } } {ok}
+
+  db close
+}
+
+
+
+finish_test
