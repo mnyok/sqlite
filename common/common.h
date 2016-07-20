@@ -23,6 +23,7 @@
 
 
 int sql_execute(sqlite3* db, const char * sql);
-
+int sql_insert(sqlite3* db, const char * table, int a, int b, int c);
+int sql_update(sqlite3* db, const char * table, int key, int value);
 int sql_insert_rand(sqlite3* db, const char * table);
 int sql_update_rand(sqlite3* db, const char * table);
