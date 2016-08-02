@@ -30,6 +30,10 @@ int main(){
     srand((unsigned)time(NULL) + (unsigned)getpid());
 
     sqlite3* db;
+
+    rc = sqlite3_open_v2("test2-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
+    sqlite3_close(db);
+
     rc = sqlite3_open_v2("test1-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
 
     check();

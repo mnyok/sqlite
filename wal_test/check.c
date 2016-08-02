@@ -35,6 +35,7 @@ int main(){
 
     sql_execute(db,"attach database 'test2-wal.db' as t2");
 
+    //A: index B: updated value C: original(inserted) value 
     rc = sqlite3_exec(db, "select * from (select tb1.a as A, tb1.b as B1, tb1.c as C, t2.tb2.b as B2 from tb1 inner join t2.tb2 on tb1.a = t2.tb2.a) where (C * 2) != (B1 + B2)", callback_sum, &result, nil);
     check();
     printf("Number of unvalid column: %d\n", result);
