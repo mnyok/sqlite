@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F691E1041D2D178200C93504"
+               BlueprintIdentifier = "F6DBA1511D3FBE1B002BDABD"
                BuildableName = "sqlite_test"
                BlueprintName = "sqlite_test"
                ReferencedContainer = "container:sqlite_test.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F691E1041D2D178200C93504"
+            BlueprintIdentifier = "F6DBA1511D3FBE1B002BDABD"
             BuildableName = "sqlite_test"
             BlueprintName = "sqlite_test"
             ReferencedContainer = "container:sqlite_test.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F691E1041D2D178200C93504"
+            BlueprintIdentifier = "F6DBA1511D3FBE1B002BDABD"
             BuildableName = "sqlite_test"
             BlueprintName = "sqlite_test"
             ReferencedContainer = "container:sqlite_test.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F691E1041D2D178200C93504"
+            BlueprintIdentifier = "F6DBA1511D3FBE1B002BDABD"
             BuildableName = "sqlite_test"
             BlueprintName = "sqlite_test"
             ReferencedContainer = "container:sqlite_test.xcodeproj">

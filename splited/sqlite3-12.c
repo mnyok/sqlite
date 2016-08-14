@@ -528,7 +528,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
             }
           }
           if( rc==SQLITE_OK ){
-            rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 1);
+            rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 1, p->pDestDb);
           }
 
           /* Write the extra pages and truncate the database file as required */
@@ -557,7 +557,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
           }
         }else{
           sqlite3PagerTruncateImage(pDestPager, nDestTruncate);
-          rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 0);
+          rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 0, p->pDestDb);
         }
     
         /* Finish committing the transaction to the destination database. */

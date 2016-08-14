@@ -762,6 +762,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_exec(
 #define SQLITE_OPEN_SHAREDCACHE      0x00020000  /* Ok for sqlite3_open_v2() */
 #define SQLITE_OPEN_PRIVATECACHE     0x00040000  /* Ok for sqlite3_open_v2() */
 #define SQLITE_OPEN_WAL              0x00080000  /* VFS only */
+#define SQLITE_OPEN_WAL_MASTER_JOURNAL_STORE    0x00100000  /* VFS only */
 
 /* Reserved:                         0x00F00000 */
 
@@ -12831,7 +12832,7 @@ SQLITE_PRIVATE void *sqlite3PagerGetExtra(DbPage *);
 /* Functions used to manage pager transactions and savepoints. */
 SQLITE_PRIVATE void sqlite3PagerPagecount(Pager*, int*);
 SQLITE_PRIVATE int sqlite3PagerBegin(Pager*, int exFlag, int);
-SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(Pager*,const char *zMaster, int);
+SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(Pager*,const char *zMaster, int,sqlite3*);
 SQLITE_PRIVATE int sqlite3PagerExclusiveLock(Pager*);
 SQLITE_PRIVATE int sqlite3PagerSync(Pager *pPager, const char *zMaster);
 SQLITE_PRIVATE int sqlite3PagerCommitPhaseTwo(Pager*);

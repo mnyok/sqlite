@@ -1,0 +1,26 @@
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+
+forcedelete *mj* test.db test2.db test.db-journal test2.db-journal
+
+sqlite3 db test.db
+execsql {
+    create table t1 (a,b,c);
+}
+sqlite3 db test2.db
+
+execsql {
+    create table t2 (a,b,c);
+}
+
+sqlite3 db test.db
+
+do_test delete_mode_multiple_file {
+    crashsql -delay 1 -file test2.db-journal {
+      ATTACH 'test2.db' AS aux;
+      BEGIN;
+        INSERT INTO t1 VALUES(1, 2, 3);
+        INSERT INTO t2 VALUES(1, 2, 3);
+      COMMIT;
+    }
+} {1 {child process exited abnormally}}

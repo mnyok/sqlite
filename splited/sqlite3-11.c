@@ -3734,7 +3734,7 @@ SQLITE_PRIVATE int sqlite3BtreeCommitPhaseOne(Btree *p, const char *zMaster){
       sqlite3PagerTruncateImage(pBt->pPager, pBt->nPage);
     }
 #endif
-    rc = sqlite3PagerCommitPhaseOne(pBt->pPager, zMaster, 0);
+    rc = sqlite3PagerCommitPhaseOne(pBt->pPager, zMaster, 0,p->db);
     sqlite3BtreeLeave(p);
   }
   return rc;
@@ -9455,6 +9455,12 @@ SQLITE_PRIVATE const char *sqlite3BtreeGetFilename(Btree *p){
 SQLITE_PRIVATE const char *sqlite3BtreeGetJournalname(Btree *p){
   assert( p->pBt->pPager!=0 );
   return sqlite3PagerJournalname(p->pBt->pPager);
+}
+
+
+SQLITE_PRIVATE const char *sqlite3BtreeGetWalMasterStoreName(Btree *p){
+    assert( p->pBt->pPager!=0 );
+    return sqlite3PagerWalMasterStorename(p->pBt->pPager);
 }
 
 /*

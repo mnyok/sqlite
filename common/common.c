@@ -5,14 +5,45 @@
 #include "common.h"
 
 
+//  void (*xLog)(void*,int,const char*);
 
+void sql_log(void* data, int resultCode, const char* msg){
+    
+}
 
-int sql_execute(sqlite3* db, const char * sql){
+int sql_callback(void *data, int argc, char **argv, char **azColName)
+{
+    int i;
+    fprintf(stderr, "%s: ", (const char*)data);
+    for(i=0; i<argc; i++){
+        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    }
+    printf("\n");
+    return 0;
+}
+
+int check(sqlite3* db,int rc){
+    if(rc != SQLITE_OK){
+        puts(sqlite3_errmsg(db));
+        puts("sqlite close");
+        sqlite3_close(db);
+        exit(1);
+    }
+    
+    return rc;
+
+}
+void test(){
+    printf("asdf");
+}
+int sql_execute(sqlite3* db, const char * sql, boolean useCallback){
     int rc;
+    
+//    rc = sqlite3_exec(db, sql, useCallback ? sql_callback : nil, nil, nil);
 
-    rc = sqlite3_exec(db, sql, nil, nil, nil);
+    rc = sqlite3_exec(db, sql, useCallback ? sql_callback : nil, (void*)"Callback function", nil);
 
-    check();
+//    check(db,rc);
 
     return rc;
 }
@@ -41,9 +72,9 @@ int sql_insert(sqlite3* db, const char * table, int a, int b, int c){
 
     // printf("%s\n", sql);
 
-    rc = sqlite3_exec(db, sql, nil, nil, nil);
+    rc = sql_execute(db, sql,false);
 
-    check();
+    check(db,rc);
 
     return rc;
 }
@@ -69,7 +100,7 @@ int sql_update(sqlite3* db, const char * table, int key, int value){
 
     rc = sqlite3_exec(db, sql, nil, nil, nil);
 
-    check();
+    check(db,rc);
 
     return rc;
 }
@@ -92,7 +123,7 @@ int sql_insert_rand(sqlite3* db, const char * table){
     }
     strcat(sql, ")");
 
-    rc = sql_execute(db,sql);
+    rc = sql_execute(db,sql,false);
 
     return rc;
 }
@@ -112,7 +143,7 @@ int sql_update_rand(sqlite3* db, const char * table){
 
     // printf("%s\n", sql);
 
-    rc = sql_execute(db,sql);
+    rc = sql_execute(db,sql,false);
 
     return rc;
 }
