@@ -1120,7 +1120,7 @@ error: //chksum이 0이 안 되거나 read같은곳에서 에러 발생
 
 }
 
-SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover){
+SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback){
     
     
 #warning wal mxFrame to recover from master store
@@ -1129,12 +1129,14 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover){
     sqlite3_file* pMasterStore = 0;
     int res = 0;
     i64 szW = 0;
-    u8* zMasterJournalName = 0;
+    char* zMasterJournalName = 0;
     u32 nMasterJournalName = 0;
     u32 chksum = 0;
     u8* aMagic[8];
     u32 storedMxFrame = UINT32_MAX;
     int i;
+    
+    *shouldRollback = 0; // 일단 0으로 해놓고
     
 
     rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
@@ -1182,8 +1184,18 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover){
         
     }
     
-  
-#warning todo check hotness of mj-store
+    rc = sqlite3OsAccess(pWal->pVfs, zMasterJournalName, SQLITE_ACCESS_EXISTS, &res);
+    
+    if(rc != SQLITE_OK){
+        return rc;
+    }
+    
+    if(!res){ //master journal file이 없으면 hot하지 않으므로 복구할 필요 없음
+        *shouldRollback = 0;
+        goto finish;
+    }
+    
+    
     
     for(i=0;i<nMasterJournalName;i++){
         chksum-=zMasterJournalName[nMasterJournalName];
@@ -1193,6 +1205,7 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover){
         //corrupted
         goto finish;
     }else{
+        *shouldRollback = 1;
         *mxFrameToRecover = storedMxFrame;
     }
     
@@ -1259,10 +1272,10 @@ static int walIndexRecover(Wal *pWal){
     u32 version;                  /* Magic value read from WAL header */
     int isValid;                  /* True if this frame is valid */
     u32 mxFrameToRecover = UINT32_MAX; /* mxFrame From master store file */
-     
-#warning wal index recover
+    int shouldRollback = 0;
       
-    
+#warning wal index recover
+
       
     /* Read in the WAL header. */
     rc = sqlite3OsRead(pWal->pWalFd, aBuf, WAL_HDRSIZE, 0);
@@ -1316,9 +1329,7 @@ static int walIndexRecover(Wal *pWal){
     }
     aData = &aFrame[WAL_FRAME_HDRSIZE];
       
-      
-      
-    rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover);
+    rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover,&shouldRollback);
     
     if(rc!=SQLITE_OK){
         goto recovery_error;
@@ -1355,6 +1366,18 @@ static int walIndexRecover(Wal *pWal){
     }
 
     sqlite3_free(aFrame);
+      
+#warning todo sync wal and truncate to the correct size according to 'shouldRollback'
+      
+      if(shouldRollback){
+          if(   (SQLITE_OK != (rc != sqlite3OsTruncate(pWal->pWalFd, iOffset)))
+             || (SQLITE_OK != (rc != sqlite3OsSync(pWal->pWalFd, pWal->syncFlags)))
+             || (SQLITE_OK != (rc != sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0)))){
+              
+              goto recovery_error;
+          }
+      }
+      
   }
 
 finished:
@@ -1387,8 +1410,9 @@ finished:
           pWal->hdr.mxFrame, pWal->zWalName
       );
     }
+    
   }
-
+    
 recovery_error:
   WALTRACE(("WAL%p: recovery %s\n", pWal, rc ? "failed" : "ok"));
   walUnlockExclusive(pWal, iLock, nLock);
