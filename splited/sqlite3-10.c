@@ -1141,9 +1141,15 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
 
     rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
     
-    if(rc!=SQLITE_OK || res == 0){
+    if(rc!=SQLITE_OK){
         return rc;
+    }else{
+        if(!res){
+            *shouldRollback = 0;
+            return rc;
+        }
     }
+   
     
     rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pMasterStore,SQLITE_OPEN_READONLY|SQLITE_OPEN_EXCLUSIVE, 0);
     
@@ -1494,6 +1500,7 @@ SQLITE_PRIVATE int sqlite3WalOpen(
   pRet->readLock = -1;
   pRet->mxWalSize = mxWalSize;
   pRet->zWalName = zWalName;
+  pRet->zWalMasterStore = zWalMasterStore;
   pRet->syncHeader = 1;
   pRet->padToSectorBoundary = 1;
   pRet->exclusiveMode = (bNoShm ? WAL_HEAPMEMORY_MODE: WAL_NORMAL_MODE);
