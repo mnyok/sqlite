@@ -2320,31 +2320,27 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     for(i=0; i<db->nDb; i++){
       Btree *pBt = db->aDb[i].pBt;
       if( sqlite3BtreeIsInTrans(pBt) ){
-        char const *zFile = sqlite3BtreeGetJournalname(pBt);
+
+        Pager* pPager;
+        char const *zFile = 0;
+
+        sqlite3BtreeEnter(pBt);
+        pPager = sqlite3BtreePager(pBt);
+
+        if(pagerUseWal(pPager)) {
+            zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
+        }else{
+            zFile = sqlite3BtreeGetJournalname(pBt);
+        }
+
+        sqlite3BtreeLeave(pBt);
+
         if( zFile==0 ){
           continue;  /* Ignore TEMP and :memory: databases */
         }
         assert( zFile[0]!=0 );
         rc = sqlite3OsWrite(pMaster, zFile, sqlite3Strlen30(zFile)+1, offset);
         offset += sqlite3Strlen30(zFile)+1;
-
- //write mxFrame number to master journal
-        Pager *pPager;   /* Pager associated with pBt */
-        sqlite3BtreeEnter(pBt);
-        pPager = sqlite3BtreePager(pBt);
-        if( pagerUseWal(pPager) ){
-          char mxFrame[12];
-          i64 nSize;
-          sqlite3OsFileSize(pPager->pWal->pWalFd, &nSize);
-          sprintf(mxFrame, "%llu",nSize);
-          rc = sqlite3OsWrite(pMaster, mxFrame, sqlite3Strlen30(mxFrame)+1, offset);
-          offset += sqlite3Strlen30(mxFrame)+1;
-        }
-        // rc = sqlite3PagerExclusiveLock(pPager);
-        sqlite3BtreeLeave(pBt);
-
-
-        //end
 
         if( rc!=SQLITE_OK ){
           sqlite3OsCloseFree(pMaster);
@@ -2401,6 +2397,28 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     if( rc ){
       return rc;
     }
+    
+    /*
+    Delete the wal master store file.
+    */
+
+    for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
+        Btree *pBt = db->aDb[i].pBt;
+        Pager* pPager;
+
+        if( pBt){
+            pPager = sqlite3BtreePager(pBt);
+            if(pagerUseWal(pPager)){
+
+                rc = sqlite3OsDelete(pPager->pVfs,pPager->pWal->zWalMasterStore,0);
+
+                if(rc!=SQLITE_OK){
+                    return rc;
+                }
+            }
+        }
+    }
+
 
     /* All files and directories have already been synced, so the following
     ** calls to sqlite3BtreeCommitPhaseTwo() are only closing files and
