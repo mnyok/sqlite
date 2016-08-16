@@ -1288,7 +1288,7 @@ int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollb
     }
 
     for(i=0;i<nMasterJournalName;i++){
-        chksum-=zMasterJournalName[nMasterJournalName];
+        chksum-=zMasterJournalName[i];
     }
 
     if(chksum){

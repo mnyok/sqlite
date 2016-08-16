@@ -82,25 +82,17 @@ void create_db_and_make_table_and_set_journaling(sqlite3** db,const char* name, 
     
 }
 
-#define nil NULL
-int main(){
+void read(sqlite3* db){
     
-    sqlite3* db;
-    sqlite3* db2;
+    sqlite3_open_v2("test2.db", &db, SQLITE_OPEN_READWRITE, nil);
     
+    sql_execute(db, "select * from t2");
+}
 
-    change_directory_to_source_folder();
-    sqlite3_config(SQLITE_CONFIG_LOG,sql_log);
-    
-    sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
-    
-    sql_execute(db, "select * from t1");
-    
-    return 0;
-    
+void transaction(sqlite3* db,sqlite3* db2){
     delete_files("test.db");
     delete_files("test2.db");
-
+    
     create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
     
     
@@ -116,10 +108,28 @@ int main(){
         sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
     }
     sql_execute(db,"commit");
-
-    while(1);
+    
     
     sqlite3_close(db);
+}
+
+#define nil NULL
+int main(){
+    
+    sqlite3* db;
+    sqlite3* db2;
+    
+
+    change_directory_to_source_folder();
+    sqlite3_config(SQLITE_CONFIG_LOG,sql_log);
+    
+ 
+    read(db);
+//    transaction(db,db2);
+    
+    
+    
+    
 
     puts("complete");
     

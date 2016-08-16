@@ -1204,7 +1204,7 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
     }
     
     for(i=0;i<nMasterJournalName;i++){
-        chksum-=zMasterJournalName[nMasterJournalName];
+        chksum-=zMasterJournalName[i];
     }
     
     if(chksum){
