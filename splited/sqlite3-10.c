@@ -1177,9 +1177,11 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
         if(zMasterJournalName){
             sqlite3_free(zMasterJournalName);
         }
-        
-        
         sqlite3OsCloseFree(pMasterStore);
+        
+        *shouldRollback = false;
+        
+        return rc;
         
         
     }
@@ -1194,8 +1196,6 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
         *shouldRollback = 0;
         goto finish;
     }
-    
-    
     
     for(i=0;i<nMasterJournalName;i++){
         chksum-=zMasterJournalName[nMasterJournalName];

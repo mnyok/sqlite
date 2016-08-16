@@ -16,7 +16,7 @@ execsql {
 sqlite3 db test.db
 
 do_test delete_mode_multiple_file {
-    crashsql -delay 1 -file test2.db-journal {
+    crashsql -delay 1 -file test2.db {
       ATTACH 'test2.db' AS aux;
       BEGIN;
         INSERT INTO t1 VALUES(1, 2, 3);

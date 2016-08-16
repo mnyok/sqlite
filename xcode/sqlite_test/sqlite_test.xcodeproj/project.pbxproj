@@ -307,6 +307,8 @@
 		F6DBA15A1D3FBE1B002BDABD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_CFLAGS = "-Wno-ambiguous-macro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -314,6 +316,8 @@
 		F6DBA15B1D3FBE1B002BDABD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				OTHER_CFLAGS = "-Wno-ambiguous-macro";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -337,6 +341,7 @@
 				F6DBA15B1D3FBE1B002BDABD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
