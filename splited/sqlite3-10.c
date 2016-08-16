@@ -1120,7 +1120,7 @@ error: //chksum이 0이 안 되거나 read같은곳에서 에러 발생
 
 }
 
-SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback){
+SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback, char** zMasterJournalName){
     
     
 #warning wal mxFrame to recover from master store
@@ -1129,7 +1129,7 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
     sqlite3_file* pMasterStore = 0;
     int res = 0;
     i64 szW = 0;
-    char* zMasterJournalName = 0;
+//    char* zMasterJournalName = 0;
     u32 nMasterJournalName = 0;
     u32 chksum = 0;
     u8* aMagic[8];
@@ -1176,23 +1176,24 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
        || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4,&nMasterJournalName)))
        || (pWal->pVfs->mxPathname < nMasterJournalName)
        || (0 == (zMasterJournalName = sqlite3MallocZero(nMasterJournalName)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterJournalName,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
+       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,*zMasterJournalName,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
        || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4-nMasterJournalName-4,&storedMxFrame)))
        ){
         
-        if(zMasterJournalName){
-            sqlite3_free(zMasterJournalName);
+        *shouldRollback = 0;
+        
+        if(*zMasterJournalName){
+            sqlite3_free(*zMasterJournalName);
         }
         sqlite3OsCloseFree(pMasterStore);
         
-        *shouldRollback = false;
-        
+       
         return rc;
         
         
     }
     
-    rc = sqlite3OsAccess(pWal->pVfs, zMasterJournalName, SQLITE_ACCESS_EXISTS, &res);
+    rc = sqlite3OsAccess(pWal->pVfs, *zMasterJournalName, SQLITE_ACCESS_EXISTS, &res);
     
     if(rc != SQLITE_OK){
         return rc;
@@ -1204,7 +1205,7 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
     }
     
     for(i=0;i<nMasterJournalName;i++){
-        chksum-=zMasterJournalName[i];
+        chksum-=*zMasterJournalName[i];
     }
     
     if(chksum){
@@ -1217,7 +1218,7 @@ SQLITE_PRIVATE int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, i
     
 finish:
 
-    sqlite3_free(zMasterJournalName);
+//    sqlite3_free(zMasterJournalName);
     sqlite3OsCloseFree(pMasterStore);
     
     return rc;
@@ -1240,7 +1241,7 @@ static int walIndexRecover(Wal *pWal){
   u32 aFrameCksum[2] = {0, 0};
   int iLock;                      /* Lock offset to lock for checkpoint */
   int nLock;                      /* Number of locks to hold */
-
+  char* zMasterJournalName = 0;
   /* Obtain an exclusive lock on all byte in the locking range not already
   ** locked by the caller. The caller is guaranteed to have locked the
   ** WAL_WRITE_LOCK byte, and may have also locked the WAL_CKPT_LOCK byte.
@@ -1335,7 +1336,7 @@ static int walIndexRecover(Wal *pWal){
     }
     aData = &aFrame[WAL_FRAME_HDRSIZE];
       
-    rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover,&shouldRollback);
+    rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover,&shouldRollback,&zMasterJournalName);
     
     if(rc!=SQLITE_OK){
         goto recovery_error;
@@ -1383,6 +1384,14 @@ static int walIndexRecover(Wal *pWal){
               
               goto recovery_error;
           }
+          
+          rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName);
+          sqlite3_free(zMasterJournalName);
+          if(rc!=SQLITE_OK){
+              goto recovery_error;
+          }
+          
+          
       }
       
   }
@@ -3623,11 +3632,11 @@ SQLITE_PRIVATE int sqlite3WalMxFrame(Wal *pWal){
   return pWal->hdr.mxFrame;
 }
 
-SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr){
+SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Wal* pWal, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr){
     
 #warning sqlite3 wal read master journal
     
-    return walReadMasterJournal(pPager->pWal, pWalMasterStore, zMasterPtr, nMasterPtr);
+    return walReadMasterJournal(pWal, pWalMasterStore, zMasterPtr, nMasterPtr);
     
 }
 

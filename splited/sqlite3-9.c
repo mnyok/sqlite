@@ -176,7 +176,7 @@ SQLITE_PRIVATE int sqlite3WalMxFrame(Wal *pWal);
 
 /* Read master journal from the WAL mj store file */
 
-SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
+SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Wal* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */
@@ -2574,6 +2574,7 @@ static int pager_playback_one_page(
   return rc;
 }
 
+
 /*
 ** Parameter zMaster is the name of a master journal file. A single journal
 ** file that referred to the master journal file has just been rolled back.
@@ -2617,8 +2618,7 @@ static int pager_playback_one_page(
 ** a couple of kilobytes or so - potentially larger than the page 
 ** size.
 */
-static int pager_delmaster(Pager *pPager, const char *zMaster){
-  sqlite3_vfs *pVfs = pPager->pVfs;
+static int pager_delmaster(sqlite3_vfs *pVfs, Wal *pWal, const char *zMaster){
   int rc;                   /* Return code */
   sqlite3_file *pMaster;    /* Malloc'd master-journal file descriptor */
   sqlite3_file *pJournal;   /* Malloc'd child-journal file descriptor */
@@ -2684,7 +2684,7 @@ static int pager_delmaster(Pager *pPager, const char *zMaster){
         
       if((9 <= nJournal)
          && (0 == memcmp(&zJournal[nJournal-9],"-mj-store",9))){
-          rc = sqlite3WalReadMasterJournal(pPager, pJournal, zMasterPtr, nMasterPtr);
+          rc = sqlite3WalReadMasterJournal(pWal, pJournal, zMasterPtr, nMasterPtr);
       }else{
           rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
       }
@@ -3059,7 +3059,7 @@ end_playback:
     /* If there was a master journal and this routine will return success,
     ** see if it is possible to delete the master journal.
     */
-    rc = pager_delmaster(pPager, zMaster);
+    rc = pager_delmaster(pPager->pVfs, pPager->pWal, zMaster);
     testcase( rc!=SQLITE_OK );
   }
   if( isHot && nPlayback ){
