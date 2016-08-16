@@ -6342,13 +6342,13 @@ SQLITE_PRIVATE int sqlite3PagerExclusiveLock(Pager *pPager){
   return rc;
 }
 
-SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,int noSync, sqlite3* db){
+SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore){
     
 #warning write master store file
     
     int rc = SQLITE_OK;
     sqlite3_file* pMasterStore = 0;
-    char* zMasterStore = 0;
+//    char* zMasterStore = 0;
     char const *zFileName = 0;
     int res;
     int nMaster = 0;
@@ -6370,21 +6370,23 @@ SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,in
     nMaster = sqlite3Strlen30(zMaster);
     mxFrame = sqlite3WalMxFrame(pPager->pWal);
     
-    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
+//    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
     
-    if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
+//    if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
 
-    rc = sqlite3OsAccess(db->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
+    rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
     
     if(rc!=SQLITE_OK){
-           sqlite3DbFree(db, zMasterStore);
+        return rc;
+//           sqlite3DbFree(db, zMasterStore);
     }
     
-    rc = sqlite3OsOpenMalloc(db->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
+    rc = sqlite3OsOpenMalloc(pPager->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
     
     if(rc!=SQLITE_OK){
         
-        sqlite3DbFree(db, zMasterStore);
+        return rc;
+//        sqlite3DbFree(db, zMasterStore);
     }
 
     
@@ -6405,9 +6407,9 @@ SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,in
         
         sqlite3OsCloseFree(pMasterStore);
         
-        sqlite3OsDelete(db->pVfs,zMasterStore, 0);
+        sqlite3OsDelete(pPager->pVfs,zMasterStore, 0);
         
-        sqlite3DbFree(db, zMasterStore);
+//        sqlite3DbFree(db, zMasterStore);
         
         return rc;
         
@@ -6416,9 +6418,9 @@ SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,in
 
     }
     
-    
+    sqlite3OsSync(pMasterStore, pPager->syncFlags);
     sqlite3OsCloseFree(pMasterStore);
-    sqlite3DbFree(db, zMasterStore);
+//    sqlite3DbFree(db, zMasterStore);
 
     
     return rc;
@@ -6454,11 +6456,11 @@ SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,in
 SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
   Pager *pPager,                  /* Pager object */
   const char *zMaster,            /* If not NULL, the master journal name */
-  int noSync,                      /* True to omit the xSync on the db file */
-  sqlite3* db                       /* db to commit */
+  int noSync                      /* True to omit the xSync on the db file */
 ){
   int rc = SQLITE_OK;             /* Return code */
-
+//  char* zMasterStore = 0;
+    
   assert( pPager->eState==PAGER_WRITER_LOCKED
        || pPager->eState==PAGER_WRITER_CACHEMOD
        || pPager->eState==PAGER_WRITER_DBMOD
@@ -6491,7 +6493,9 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
       /*
        write wal master store file
        */
-      rc = writeWalMasterStoreFile(pPager, zMaster, noSync, db);
+//      zMasterStore = sqlite3MPrintf(db, "%s-mj-store",pPager->zFilename);
+      rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
+//      sqlite3DbFree(db, zMasterStore);
       if(rc!=SQLITE_OK) goto commit_phase_one_exit;
         
         

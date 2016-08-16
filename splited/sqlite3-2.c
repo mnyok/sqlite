@@ -12832,7 +12832,7 @@ SQLITE_PRIVATE void *sqlite3PagerGetExtra(DbPage *);
 /* Functions used to manage pager transactions and savepoints. */
 SQLITE_PRIVATE void sqlite3PagerPagecount(Pager*, int*);
 SQLITE_PRIVATE int sqlite3PagerBegin(Pager*, int exFlag, int);
-SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(Pager*,const char *zMaster, int,sqlite3*);
+SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(Pager*,const char *zMaster, int);
 SQLITE_PRIVATE int sqlite3PagerExclusiveLock(Pager*);
 SQLITE_PRIVATE int sqlite3PagerSync(Pager *pPager, const char *zMaster);
 SQLITE_PRIVATE int sqlite3PagerCommitPhaseTwo(Pager*);

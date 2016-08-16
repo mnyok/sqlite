@@ -3733,7 +3733,7 @@ int sqlite3BtreeCommitPhaseOne(Btree *p, const char *zMaster){
       sqlite3PagerTruncateImage(pBt->pPager, pBt->nPage);
     }
 #endif
-    rc = sqlite3PagerCommitPhaseOne(pBt->pPager, zMaster, 0, p->db);
+    rc = sqlite3PagerCommitPhaseOne(pBt->pPager, zMaster, 0);
     sqlite3BtreeLeave(p);
   }
   return rc;
