@@ -70,6 +70,9 @@
 # define sqlite3WalFramesize(z)                  0
 # define sqlite3WalFindFrame(x,y,z)              0
 # define sqlite3WalFile(x)                       0
+# define sqlite3WalMxFrame(x)                    0
+# define sqlite3WalReadMasterJournal(w, x, y, z) 0
+# define sqlite3WalWriteMasterStoreFile(x, y, z) 0
 #else
 
 static const unsigned char aWalMasterStoreMagic[] = {
@@ -177,6 +180,9 @@ SQLITE_PRIVATE int sqlite3WalMxFrame(Wal *pWal);
 /* Read master journal from the WAL mj store file */
 
 SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
+
+/* Write master store to mj-store file */
+SQLITE_PRIVATE int sqlite3WalWriteMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */
@@ -6342,90 +6348,7 @@ SQLITE_PRIVATE int sqlite3PagerExclusiveLock(Pager *pPager){
   return rc;
 }
 
-SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore){
-    
-#warning write master store file
-    
-    int rc = SQLITE_OK;
-    sqlite3_file* pMasterStore = 0;
-//    char* zMasterStore = 0;
-    char const *zFileName = 0;
-    int res;
-    int nMaster = 0;
-    u32 mxFrame;
-    u32 chksum;
-    int i;
-//    char chksum[4] = {0,};
-    
-    
-    assert( pagerUseWal(pPager) );
-    
-    if( !zMaster
-       || pPager->journalMode==PAGER_JOURNALMODE_MEMORY
-       ){
-        return SQLITE_OK;
-    }
-    
-    zFileName = pPager->zFilename;
-    nMaster = sqlite3Strlen30(zMaster);
-    mxFrame = sqlite3WalMxFrame(pPager->pWal);
-    
-//    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
-    
-//    if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
 
-    rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
-    
-    if(rc!=SQLITE_OK){
-        return rc;
-//           sqlite3DbFree(db, zMasterStore);
-    }
-    
-    rc = sqlite3OsOpenMalloc(pPager->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
-    
-    if(rc!=SQLITE_OK){
-        
-        return rc;
-//        sqlite3DbFree(db, zMasterStore);
-    }
-
-    
-    for(i=0;i<nMaster;i++){
-        chksum+=zMaster[i];
-    }
-    
-    /*
-        mxFrame(4 bytes)|mj_name(variable)|mj_name_length(4 bytes)|chksum(4 bytes)|magic number(8 bytes)
-     */
-    if(
-          (SQLITE_OK != (rc = write32bits(pMasterStore, 0, mxFrame)))
-       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore, zMaster, nMaster, 4)))
-       || (SQLITE_OK != (rc = write32bits(pMasterStore, nMaster + 4, nMaster)))
-       || (SQLITE_OK != (rc = write32bits(pMasterStore,4+nMaster+4,chksum)))
-       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore,aWalMasterStoreMagic,8,4+nMaster+4+4)))
-       ){
-        
-        sqlite3OsCloseFree(pMasterStore);
-        
-        sqlite3OsDelete(pPager->pVfs,zMasterStore, 0);
-        
-//        sqlite3DbFree(db, zMasterStore);
-        
-        return rc;
-        
-    }else{
-        rc = sqlite3OsTruncate(pMasterStore,4+nMaster+4+4+8);
-
-    }
-    
-    sqlite3OsSync(pMasterStore, pPager->syncFlags);
-    sqlite3OsCloseFree(pMasterStore);
-//    sqlite3DbFree(db, zMasterStore);
-
-    
-    return rc;
-    
-}
 
 /*
 ** Sync the database file for the pager pPager. zMaster points to the name
@@ -6493,8 +6416,9 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
       /*
        write wal master store file
        */
-//      zMasterStore = sqlite3MPrintf(db, "%s-mj-store",pPager->zFilename);
-      rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
+
+ 
+      rc = sqlite3WalWriteMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
 //      sqlite3DbFree(db, zMasterStore);
       if(rc!=SQLITE_OK) goto commit_phase_one_exit;
         

@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1409"
-            endingLineNumber = "1409"
+            startingLineNumber = "1407"
+            endingLineNumber = "1407"
             landmarkName = "walIndexRecover()"
             landmarkType = "7">
          </BreakpointContent>
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2407"
-            endingLineNumber = "2407"
+            startingLineNumber = "2405"
+            endingLineNumber = "2405"
             landmarkName = "walTryBeginRead()"
             landmarkType = "7">
          </BreakpointContent>
@@ -154,28 +154,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2376"
-            endingLineNumber = "2376"
+            startingLineNumber = "2374"
+            endingLineNumber = "2374"
             landmarkName = "walTryBeginRead()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1316"
-            endingLineNumber = "1316"
-            landmarkName = "walIndexRecover()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -202,11 +186,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "3094"
-            endingLineNumber = "3094"
+            startingLineNumber = "3092"
+            endingLineNumber = "3092"
             landmarkName = "walRewriteChecksums()"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,11 +202,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "3153"
-            endingLineNumber = "3153"
+            startingLineNumber = "3151"
+            endingLineNumber = "3151"
             landmarkName = "sqlite3WalFrames()"
             landmarkType = "7">
          </BreakpointContent>
@@ -234,11 +218,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "3229"
-            endingLineNumber = "3229"
+            startingLineNumber = "3227"
+            endingLineNumber = "3227"
             landmarkName = "sqlite3WalFrames()"
             landmarkType = "7">
          </BreakpointContent>
@@ -250,11 +234,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "3291"
-            endingLineNumber = "3291"
+            startingLineNumber = "3289"
+            endingLineNumber = "3289"
             landmarkName = "sqlite3WalFrames()"
             landmarkType = "7">
          </BreakpointContent>
@@ -266,11 +250,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2321"
-            endingLineNumber = "2321">
+            startingLineNumber = "2319"
+            endingLineNumber = "2319">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -280,11 +264,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1860"
-            endingLineNumber = "1860"
+            startingLineNumber = "1858"
+            endingLineNumber = "1858"
             landmarkName = "walRestartHdr()"
             landmarkType = "7">
          </BreakpointContent>
@@ -296,11 +280,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-10.c"
-            timestampString = "492870437.858728"
+            timestampString = "493044240.895073"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "3214"
-            endingLineNumber = "3214"
+            startingLineNumber = "3212"
+            endingLineNumber = "3212"
             landmarkName = "sqlite3WalFrames()"
             landmarkType = "7">
          </BreakpointContent>
@@ -312,11 +296,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../splited/sqlite3-9.c"
-            timestampString = "492870437.858728"
+            timestampString = "493043686.440316"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "6572"
-            endingLineNumber = "6572"
+            startingLineNumber = "6576"
+            endingLineNumber = "6576"
             landmarkName = "sqlite3PagerCommitPhaseOne()"
             landmarkType = "7">
          </BreakpointContent>
@@ -366,6 +350,70 @@
             startingLineNumber = "2418"
             endingLineNumber = "2418"
             landmarkName = "vdbeCommit()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493044240.895073"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1336"
+            endingLineNumber = "1336"
+            landmarkName = "walIndexRecover()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493044240.895073"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1126"
+            endingLineNumber = "1126"
+            landmarkName = "walMxFrameFromMasterStore()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493044240.895073"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1169"
+            endingLineNumber = "1169"
+            landmarkName = "walMxFrameFromMasterStore()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493044275.554292"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1208"
+            endingLineNumber = "1208"
+            landmarkName = "walMxFrameFromMasterStore()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

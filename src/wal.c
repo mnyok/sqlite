@@ -1156,6 +1156,91 @@ int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMast
    
 }
 
+int walWriteMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore){
+    
+    int rc = SQLITE_OK;
+    sqlite3_file* pMasterStore = 0;
+    //    char* zMasterStore = 0;
+    char const *zFileName = 0;
+    int res;
+    int nMaster = 0;
+    u32 mxFrame;
+    u32 chksum;
+    int i;
+    //    char chksum[4] = {0,};
+    
+    
+    assert( pagerUseWal(pPager) );
+    
+    if( !zMaster
+       || pPager->journalMode==PAGER_JOURNALMODE_MEMORY
+       ){
+        return SQLITE_OK;
+    }
+    
+    zFileName = pPager->zFilename;
+    nMaster = sqlite3Strlen30(zMaster);
+    mxFrame = sqlite3WalMxFrame(pPager->pWal);
+    
+    //    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
+    
+    //    if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
+    
+    rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
+    
+    if(rc!=SQLITE_OK){
+        return rc;
+        //           sqlite3DbFree(db, zMasterStore);
+    }
+    
+    rc = sqlite3OsOpenMalloc(pPager->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
+    
+    if(rc!=SQLITE_OK){
+        
+        return rc;
+        //        sqlite3DbFree(db, zMasterStore);
+    }
+    
+    
+    for(i=0;i<nMaster;i++){
+        chksum+=zMaster[i];
+    }
+    
+    /*
+     mxFrame(4 bytes)|mj_name(variable)|mj_name_length(4 bytes)|chksum(4 bytes)|magic number(8 bytes)
+     */
+    if(
+       (SQLITE_OK != (rc = write32bits(pMasterStore, 0, mxFrame)))
+       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore, zMaster, nMaster, 4)))
+       || (SQLITE_OK != (rc = write32bits(pMasterStore, nMaster + 4, nMaster)))
+       || (SQLITE_OK != (rc = write32bits(pMasterStore,4+nMaster+4,chksum)))
+       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore,aWalMasterStoreMagic,8,4+nMaster+4+4)))
+       ){
+        
+        sqlite3OsCloseFree(pMasterStore);
+        
+        sqlite3OsDelete(pPager->pVfs,zMasterStore, 0);
+        
+        //        sqlite3DbFree(db, zMasterStore);
+        
+        return rc;
+        
+    }else{
+        rc = sqlite3OsTruncate(pMasterStore,4+nMaster+4+4+8);
+        
+    }
+    
+    sqlite3OsSync(pMasterStore, pPager->syncFlags);
+    sqlite3OsCloseFree(pMasterStore);
+    //    sqlite3DbFree(db, zMasterStore);
+    
+    
+    return rc;
+    
+}
+
+
+
 int walReadMasterJournal(Wal* pWal, sqlite3_file* pMasterStore ,char* zMasterPtr, u32 nMasterPtrBufferLength){
    
     int rc = SQLITE_OK;
@@ -1173,6 +1258,7 @@ int walReadMasterJournal(Wal* pWal, sqlite3_file* pMasterStore ,char* zMasterPtr
         || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4,&chksum)))
         || (SQLITE_OK != (rc =  read32bits(pMasterStore,szW-8-4-4,&nMasterJournalName)))
         || (nMasterPtrBufferLength <= nMasterJournalName)
+        || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterPtr,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
         || (SQLITE_OK != (rc =  read32bits(pMasterStore,szW-8-4-4-nMasterJournalName-4,&storedMxFrame)))
         ){
      goto error;
@@ -3708,5 +3794,11 @@ int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, ch
     return walReadMasterJournal(pPager->pWal, pWalMasterStore, zMasterPtr, nMasterPtr);
 
 }
+
+int sqlite3WalWriteMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore){
+    
+    return walWriteMasterStoreFile(pPager, zMaster, zMaster);
+}
+
 
 #endif /* #ifndef SQLITE_OMIT_WAL */

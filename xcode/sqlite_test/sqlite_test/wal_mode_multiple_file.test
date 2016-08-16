@@ -1,7 +1,7 @@
 set testdir [file dirname $argv0]
 source $testdir/tester.tcl
 
-forcedelete *mj* test.db test2.db test.db-wal test2.db-wal
+forcedelete *mj* test.db test2.db test.db-wal test2.db-wal test.db-mj-store test2.db-mj-store
 
 sqlite3 db test.db
 execsql {

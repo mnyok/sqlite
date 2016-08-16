@@ -45,6 +45,9 @@
 # define sqlite3WalFramesize(z)                  0
 # define sqlite3WalFindFrame(x,y,z)              0
 # define sqlite3WalFile(x)                       0
+# define sqlite3WalMxFrame(x)                    0
+# define sqlite3WalReadMasterJournal(w, x, y, z) 0
+# define sqlite3WalWriteMasterStoreFile(x, y, z) 0
 #else
 
 #define WAL_SAVEPOINT_NDATA 4
@@ -150,7 +153,9 @@ int sqlite3WalMxFrame(Wal *pWal);
 
 int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
 
-int writeWalMasterStoreFile(Pager* pPager, const char* zMaster, const char* zMasterStore);
+/* Write master store to mj-store file */
+SQLITE_PRIVATE int sqlite3WalWriteMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore);
+
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */
