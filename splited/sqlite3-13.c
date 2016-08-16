@@ -2321,7 +2321,21 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     for(i=0; i<db->nDb; i++){
       Btree *pBt = db->aDb[i].pBt;
       if( sqlite3BtreeIsInTrans(pBt) ){
-        char const *zFile = sqlite3BtreeGetJournalname(pBt);
+          Pager* pPager;
+          char const *zFile = 0;
+          
+          sqlite3BtreeEnter(pBt);
+          pPager = sqlite3BtreePager(pBt);
+          
+          if(pagerUseWal(pPager)) {
+              zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
+          }else{
+              zFile = sqlite3BtreeGetJournalname(pBt);
+          }
+          
+          sqlite3BtreeLeave(pBt);
+
+          
         if( zFile==0 ){
           continue;  /* Ignore TEMP and :memory: databases */
         }
@@ -2329,6 +2343,7 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
         rc = sqlite3OsWrite(pMaster, zFile, sqlite3Strlen30(zFile)+1, offset);
         offset += sqlite3Strlen30(zFile)+1;
 
+<<<<<<< HEAD
         //write mxFrame number to master journal
         Pager *pPager;   /* Pager associated with pBt */
         sqlite3BtreeEnter(pBt);
@@ -2343,6 +2358,8 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
         sqlite3BtreeLeave(pBt);
         //end
 
+=======
+>>>>>>> cce5628904989b800e61a6a66d837c4c50025b0d
         if( rc!=SQLITE_OK ){
           sqlite3OsCloseFree(pMaster);
           sqlite3OsDelete(pVfs, zMaster, 0);
@@ -2363,6 +2380,7 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
       sqlite3DbFree(db, zMaster);
       return rc;
     }
+
 
     /* Sync all the db files involved in the transaction. The same call
     ** sets the master journal pointer in each individual journal. If
@@ -2396,6 +2414,28 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     zMaster = 0;
     if( rc ){
       return rc;
+    }
+      
+      
+    /*
+     Delete the wal master store file.
+    */
+      
+    for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
+        Btree *pBt = db->aDb[i].pBt;
+        Pager* pPager;
+        
+        if( pBt){
+            pPager = sqlite3BtreePager(pBt);
+            if(pagerUseWal(pPager)){
+            
+                rc = sqlite3OsDelete(pPager->pVfs,pPager->pWal->zWalMasterStore,0);
+                
+                if(rc!=SQLITE_OK){
+                    return rc;
+                }
+            }
+        }
     }
 
     /* All files and directories have already been synced, so the following

@@ -9,8 +9,8 @@
 **    May you share freely, never taking more than you give.
 **
 *************************************************************************
-** This header file defines the interface to the write-ahead logging 
-** system. Refer to the comments below and the header comment attached to 
+** This header file defines the interface to the write-ahead logging
+** system. Refer to the comments below and the header comment attached to
 ** the implementation of each function in log.c for further details.
 */
 
@@ -49,19 +49,23 @@
 
 #define WAL_SAVEPOINT_NDATA 4
 
-/* Connection to a write-ahead log (WAL) file. 
-** There is one object of this type for each pager. 
+static const unsigned char aWalMasterStoreMagic[] = {
+    0xCA, 0xFE, 0xBA, 0xBE, 0xDE, 0xAD, 0xBE, 0xEF,
+};
+
+/* Connection to a write-ahead log (WAL) file.
+** There is one object of this type for each pager.
 */
 typedef struct Wal Wal;
 
 /* Open and close a connection to a write-ahead log. */
-int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, int, i64, Wal**);
+int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, const char *, int, i64, Wal**);
 int sqlite3WalClose(Wal *pWal, int sync_flags, int, u8 *);
 
 /* Set the limiting size of a WAL file. */
 void sqlite3WalLimit(Wal*, i64);
 
-/* Used by readers to open (lock) and close (unlock) a snapshot.  A 
+/* Used by readers to open (lock) and close (unlock) a snapshot.  A
 ** snapshot is like a read-transaction.  It is the state of the database
 ** at an instant in time.  sqlite3WalOpenSnapshot gets a read lock and
 ** preserves the current state even if the other threads or processes
@@ -96,7 +100,7 @@ int sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
 /* Write a frame or frames to the log. */
 int sqlite3WalFrames(Wal *pWal, int, PgHdr *, Pgno, int, int);
 
-/* Copy pages from the log to the database file */ 
+/* Copy pages from the log to the database file */
 int sqlite3WalCheckpoint(
   Wal *pWal,                      /* Write-ahead log connection */
   int eMode,                      /* One of PASSIVE, FULL and RESTART */
@@ -123,7 +127,7 @@ int sqlite3WalExclusiveMode(Wal *pWal, int op);
 
 /* Return true if the argument is non-NULL and the WAL module is using
 ** heap-memory for the wal-index. Otherwise, if the argument is NULL or the
-** WAL module is using shared-memory, return false. 
+** WAL module is using shared-memory, return false.
 */
 int sqlite3WalHeapMemory(Wal *pWal);
 
@@ -141,6 +145,12 @@ int sqlite3WalFramesize(Wal *pWal);
 
 /* Return the sqlite3_file object for the WAL file */
 sqlite3_file *sqlite3WalFile(Wal *pWal);
+
+int sqlite3WalMxFrame(Wal *pWal);
+
+int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
+
+int writeWalMasterStoreFile(Pager* pPager, const char* zMaster, const char* zMasterStore);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */

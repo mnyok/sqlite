@@ -72,6 +72,10 @@
 # define sqlite3WalFile(x)                       0
 #else
 
+static const unsigned char aWalMasterStoreMagic[] = {
+    0xCA, 0xFE, 0xBA, 0xBE, 0xDE, 0xAD, 0xBE, 0xEF,
+};
+
 #define WAL_SAVEPOINT_NDATA 4
 
 /* Connection to a write-ahead log (WAL) file.
@@ -80,7 +84,7 @@
 typedef struct Wal Wal;
 
 /* Open and close a connection to a write-ahead log. */
-SQLITE_PRIVATE int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, int, i64, Wal**);
+SQLITE_PRIVATE int sqlite3WalOpen(sqlite3_vfs*, sqlite3_file*, const char *, const char *, int, i64, Wal**);
 SQLITE_PRIVATE int sqlite3WalClose(Wal *pWal, int sync_flags, int, u8 *);
 
 /* Set the limiting size of a WAL file. */
@@ -166,6 +170,13 @@ SQLITE_PRIVATE int sqlite3WalFramesize(Wal *pWal);
 
 /* Return the sqlite3_file object for the WAL file */
 SQLITE_PRIVATE sqlite3_file *sqlite3WalFile(Wal *pWal);
+
+/* Return the mxFrame of the WAL file */
+SQLITE_PRIVATE int sqlite3WalMxFrame(Wal *pWal);
+
+/* Read master journal from the WAL mj store file */
+
+SQLITE_PRIVATE int sqlite3WalReadMasterJournal(Pager* pPager, sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */
@@ -855,6 +866,7 @@ struct Pager {
 #ifndef SQLITE_OMIT_WAL
   Wal *pWal;                  /* Write-ahead log used by "journal_mode=wal" */
   char *zWal;                 /* File name for write-ahead log */
+  char *zWalMasterStore;      /* File name for wriet-ahead log master journal store */
 #endif
 };
 
@@ -1402,6 +1414,8 @@ static int readMasterJournal(sqlite3_file *pJrnl, char *zMaster, u32 nMaster){
   u32 u;                     /* Unsigned loop counter */
   unsigned char aMagic[8];   /* A buffer to hold the magic header */
   zMaster[0] = '\0';
+    
+
 
   if( SQLITE_OK!=(rc = sqlite3OsFileSize(pJrnl, &szJ))
    || szJ<16
@@ -1792,7 +1806,7 @@ static int writeMasterJournal(Pager *pPager, const char *zMaster){
   }
   pPager->setMaster = 1;
   assert( pPager->journalHdr <= pPager->journalOff );
-
+#warning write master journal
   /* Calculate the length in bytes and the checksum of zMaster */
   for(nMaster=0; zMaster[nMaster]; nMaster++){
     cksum += zMaster[nMaster];
@@ -2648,6 +2662,10 @@ static int pager_delmaster(Pager *pPager, const char *zMaster){
   zJournal = zMasterJournal;
   while( (zJournal-zMasterJournal)<nMasterJournal ){
     int exists;
+    u32 nJournal;
+    
+    nJournal = sqlite3Strlen30(zJournal);
+      
     rc = sqlite3OsAccess(pVfs, zJournal, SQLITE_ACCESS_EXISTS, &exists);
     if( rc!=SQLITE_OK ){
       goto delmaster_out;
@@ -2663,8 +2681,13 @@ static int pager_delmaster(Pager *pPager, const char *zMaster){
       if( rc!=SQLITE_OK ){
         goto delmaster_out;
       }
-
-      rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+        
+      if((9 <= nJournal)
+         && (0 == memcmp(&zJournal[nJournal-9],"-mj-store",9))){
+          rc = sqlite3WalReadMasterJournal(pPager, pJournal, zMasterPtr, nMasterPtr);
+      }else{
+          rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+      }
       sqlite3OsClose(pJournal);
       if( rc!=SQLITE_OK ){
         goto delmaster_out;
@@ -4817,6 +4840,7 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
     nPathname + 8 + 2              /* zJournal */
 #ifndef SQLITE_OMIT_WAL
     + nPathname + 4 + 2            /* zWal */
+    + nPathname + 9 + 2            /* zMasterStore */
 #endif
   );
   assert( EIGHT_BYTE_ALIGNMENT(SQLITE_INT_TO_PTR(journalFileSize)) );
@@ -4841,11 +4865,22 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
     memcpy(pPager->zJournal, zPathname, nPathname);
     memcpy(&pPager->zJournal[nPathname], "-journal\000", 8+2);
     sqlite3FileSuffix3(pPager->zFilename, pPager->zJournal);
+      
+    
 #ifndef SQLITE_OMIT_WAL
+      
     pPager->zWal = &pPager->zJournal[nPathname+8+1];
     memcpy(pPager->zWal, zPathname, nPathname);
     memcpy(&pPager->zWal[nPathname], "-wal\000", 4+1);
     sqlite3FileSuffix3(pPager->zFilename, pPager->zWal);
+      
+#warning create zWal
+      
+    pPager->zWalMasterStore = &pPager->zWal[nPathname+4+1];
+    memcpy(pPager->zWalMasterStore,zPathname,nPathname);
+    memcpy(&pPager->zWalMasterStore[nPathname],"-mj-store\000",9+1);
+    sqlite3FileSuffix3(pPager->zFilename,pPager->zMasterStore);
+      
 #endif
     sqlite3DbFree(0, zPathname);
   }
@@ -6307,6 +6342,91 @@ SQLITE_PRIVATE int sqlite3PagerExclusiveLock(Pager *pPager){
   return rc;
 }
 
+SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMasterStore){
+    
+#warning write master store file
+    
+    int rc = SQLITE_OK;
+    sqlite3_file* pMasterStore = 0;
+//    char* zMasterStore = 0;
+    char const *zFileName = 0;
+    int res;
+    int nMaster = 0;
+    u32 mxFrame;
+    u32 chksum;
+    int i;
+//    char chksum[4] = {0,};
+    
+    
+    assert( pagerUseWal(pPager) );
+    
+    if( !zMaster
+       || pPager->journalMode==PAGER_JOURNALMODE_MEMORY
+       ){
+        return SQLITE_OK;
+    }
+    
+    zFileName = pPager->zFilename;
+    nMaster = sqlite3Strlen30(zMaster);
+    mxFrame = sqlite3WalMxFrame(pPager->pWal);
+    
+//    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
+    
+//    if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
+
+    rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
+    
+    if(rc!=SQLITE_OK){
+        return rc;
+//           sqlite3DbFree(db, zMasterStore);
+    }
+    
+    rc = sqlite3OsOpenMalloc(pPager->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
+    
+    if(rc!=SQLITE_OK){
+        
+        return rc;
+//        sqlite3DbFree(db, zMasterStore);
+    }
+
+    
+    for(i=0;i<nMaster;i++){
+        chksum+=zMaster[i];
+    }
+    
+    /*
+        mxFrame(4 bytes)|mj_name(variable)|mj_name_length(4 bytes)|chksum(4 bytes)|magic number(8 bytes)
+     */
+    if(
+          (SQLITE_OK != (rc = write32bits(pMasterStore, 0, mxFrame)))
+       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore, zMaster, nMaster, 4)))
+       || (SQLITE_OK != (rc = write32bits(pMasterStore, nMaster + 4, nMaster)))
+       || (SQLITE_OK != (rc = write32bits(pMasterStore,4+nMaster+4,chksum)))
+       || (SQLITE_OK != (rc = sqlite3OsWrite(pMasterStore,aWalMasterStoreMagic,8,4+nMaster+4+4)))
+       ){
+        
+        sqlite3OsCloseFree(pMasterStore);
+        
+        sqlite3OsDelete(pPager->pVfs,zMasterStore, 0);
+        
+//        sqlite3DbFree(db, zMasterStore);
+        
+        return rc;
+        
+    }else{
+        rc = sqlite3OsTruncate(pMasterStore,4+nMaster+4+4+8);
+
+    }
+    
+    sqlite3OsSync(pMasterStore, pPager->syncFlags);
+    sqlite3OsCloseFree(pMasterStore);
+//    sqlite3DbFree(db, zMasterStore);
+
+    
+    return rc;
+    
+}
+
 /*
 ** Sync the database file for the pager pPager. zMaster points to the name
 ** of a master journal file that should be written into the individual
@@ -6339,7 +6459,8 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
   int noSync                      /* True to omit the xSync on the db file */
 ){
   int rc = SQLITE_OK;             /* Return code */
-
+//  char* zMasterStore = 0;
+    
   assert( pPager->eState==PAGER_WRITER_LOCKED
        || pPager->eState==PAGER_WRITER_CACHEMOD
        || pPager->eState==PAGER_WRITER_DBMOD
@@ -6368,6 +6489,16 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
     sqlite3BackupRestart(pPager->pBackup);
   }else{
     if( pagerUseWal(pPager) ){
+        
+      /*
+       write wal master store file
+       */
+//      zMasterStore = sqlite3MPrintf(db, "%s-mj-store",pPager->zFilename);
+      rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
+//      sqlite3DbFree(db, zMasterStore);
+      if(rc!=SQLITE_OK) goto commit_phase_one_exit;
+        
+        
       PgHdr *pList = sqlite3PcacheDirtyList(pPager->pPCache);
       PgHdr *pPageOne = 0;
       if( pList==0 ){
@@ -6895,17 +7026,23 @@ SQLITE_PRIVATE sqlite3_file *sqlite3PagerJrnlFile(Pager *pPager){
 #endif
 }
 
+SQLITE_PRIVATE const char *sqlite3PagerWalMasterStorename(Pager *pPager){
+    return pPager->zWalMasterStore;
+}
+
 /*
 ** Return the full pathname of the journal file.
 */
 SQLITE_PRIVATE const char *sqlite3PagerJournalname(Pager *pPager){
-#if SQLITE_OMIT_WAL
     return pPager->zJournal;
+<<<<<<< HEAD
 #else
     return pPager->pWal ? pPager->zWal : pPager->zJournal;
 #endif
 
 
+=======
+>>>>>>> cce5628904989b800e61a6a66d837c4c50025b0d
 }
 
 #ifdef SQLITE_HAS_CODEC
@@ -7403,7 +7540,7 @@ static int pagerOpenWal(Pager *pPager){
   */
   if( rc==SQLITE_OK ){
     rc = sqlite3WalOpen(pPager->pVfs,
-        pPager->fd, pPager->zWal, pPager->exclusiveMode,
+        pPager->fd, pPager->zWal, pPager->zWalMasterStore, pPager->exclusiveMode,
         pPager->journalSizeLimit, &pPager->pWal
     );
   }

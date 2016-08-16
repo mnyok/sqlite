@@ -9457,6 +9457,12 @@ SQLITE_PRIVATE const char *sqlite3BtreeGetJournalname(Btree *p){
   return sqlite3PagerJournalname(p->pBt->pPager);
 }
 
+
+SQLITE_PRIVATE const char *sqlite3BtreeGetWalMasterStoreName(Btree *p){
+    assert( p->pBt->pPager!=0 );
+    return sqlite3PagerWalMasterStorename(p->pBt->pPager);
+}
+
 /*
 ** Return non-zero if a transaction is active.
 */

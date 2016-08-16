@@ -1,0 +1,34 @@
+set testdir [file dirname $argv0]
+source $testdir/tester.tcl
+
+forcedelete *mj* test.db test2.db test.db-wal test2.db-wal
+
+sqlite3 db test.db
+execsql {
+    pragma journal_mode = wal;
+    create table t1 (a,b,c);
+}
+sqlite3 db test2.db
+
+execsql {
+    pragma journal_mode = wal;
+    create table t2 (a,b,c);
+}
+
+#-opendb { sqlite3 db test2.db -vfs crash }
+
+do_test wal_mode_multiple_file {
+    crashsql -delay 1 -file test2.db-wal {
+      ATTACH 'test2.db' AS aux;
+      BEGIN;
+        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+
+
+      COMMIT;
+    }
+} {1 {child process exited abnormally}}
