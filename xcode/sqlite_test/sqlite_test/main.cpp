@@ -50,6 +50,7 @@ void delete_files(const char* name){
     remove(fstring("%s-wal",name));
     remove(fstring("%s-shm",name));
     remove(fstring("%s-journal",name));
+    remove(fstring("%s-mj-stored",name));
     
 
 }
@@ -94,22 +95,29 @@ int main(){
     sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
     
     sql_execute(db, "select * from t1");
+    
+    return 0;
+    
+    delete_files("test.db");
+    delete_files("test2.db");
 
-//    create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
+    create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
     
     
-//    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
-//    sqlite3_close(db2);
+    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
+    sqlite3_close(db2);
     
-//    sql_execute(db,"attach 'test2.db' as aux");
-//    sql_execute(db,"begin");
-//    
-//    for(int i = 0 ; i < 10 ; i ++){
-//        
-//        sql_execute(db, "insert into t1 values (randomblob(4),randomblob(4),randomblob(4))");
-//        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
-//    }
-//    sql_execute(db,"commit");
+    sql_execute(db,"attach 'test2.db' as aux");
+    sql_execute(db,"begin");
+    
+    for(int i = 0 ; i < 10 ; i ++){
+        
+        sql_execute(db, "insert into t1 values (randomblob(4),randomblob(4),randomblob(4))");
+        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
+    }
+    sql_execute(db,"commit");
+
+    while(1);
     
     sqlite3_close(db);
 

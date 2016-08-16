@@ -6370,7 +6370,7 @@ SQLITE_PRIVATE int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,in
     nMaster = sqlite3Strlen30(zMaster);
     mxFrame = sqlite3WalMxFrame(pPager->pWal);
     
-    zMasterStore = sqlite3MPrintf(db, "%s-mj-stored",zFileName);
+    zMasterStore = sqlite3MPrintf(db, "%s-mj-store",zFileName);
     
     if(zMasterStore == 0) return SQLITE_NOMEM_BKPT;
 

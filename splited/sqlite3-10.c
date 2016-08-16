@@ -1350,7 +1350,8 @@ static int walIndexRecover(Wal *pWal){
       /* Read and decode the next log frame. */
       iFrame++;
        
-      if(iFrame > mxFrameToRecover) break; // if mj-store is not found or not hot, mxFrameToRecover is UINT32_MAX that no frame is ignored.
+      if(shouldRollback
+         && (iFrame > mxFrameToRecover)) break; // if mj-store is not found or not hot, mxFrameToRecover is UINT32_MAX that no frame is ignored.
         
       rc = sqlite3OsRead(pWal->pWalFd, aFrame, szFrame, iOffset);
       if( rc!=SQLITE_OK ) break;
