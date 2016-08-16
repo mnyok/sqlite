@@ -1167,15 +1167,16 @@ int walReadMasterJournal(Wal* pWal, sqlite3_file* pMasterStore ,char* zMasterPtr
     int i;
     
     if(   (SQLITE_OK != (rc = sqlite3OsFileSize(pMasterStore,&szW)))
-       || (szW < (4 + 4 + 4 + 8))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,aMagic,8,szW-8)))
-       || (0 != memcmp(aMagic,aWalMasterStoreMagic,8))
-       || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4,&chksum)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,&nMasterJournalName,4,szW-8-4-4)))
-       || (nMasterPtrBufferLength <= nMasterJournalName)
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterPtr,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,&storedMxFrame,4,szW-8-4-4-nMasterJournalName-4)))
-       ){
+     || (szW < (4 + 4 + 4 + 8))
+     || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,aMagic,8,szW-8)))
+     || (0 != memcmp(aMagic,aWalMasterStoreMagic,8))
+     || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4,&chksum)))
+     || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4,&nMasterJournalName)))
+     || (nMasterPtrBufferLength <= nMasterJournalName)
+     || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterPtr,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
+     || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4-nMasterJournalName-4,&storedMxFrame)))
+     ){
+
         
         goto error;
         
@@ -1251,16 +1252,17 @@ int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollb
 
 
     if(   (SQLITE_OK != (rc = sqlite3OsFileSize(pMasterStore,&szW)))
-       || (szW < (4 + 4 + 4 + 8))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,aMagic,8,szW-8)))
-       || (0 != memcmp(aMagic,aWalMasterStoreMagic,8))
-       || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4,&chksum)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,&nMasterJournalName,4,szW-8-4-4)))
-       || (pWal->pVfs->mxPathname < nMasterJournalName)
-       || (0 != (zMasterJournalName = sqlite3MallocZero(nMasterJournalName)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterJournalName,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
-       || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,&storedMxFrame,4,szW-8-4-4-nMasterJournalName-4)))
-       ){
+      || (szW < (4 + 4 + 4 + 8))
+      || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,aMagic,8,szW-8)))
+      || (0 != memcmp(aMagic,aWalMasterStoreMagic,8))
+      || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4,&chksum)))
+      || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4,&nMasterJournalName)))
+      || (pWal->pVfs->mxPathname < nMasterJournalName)
+      || (0 == (zMasterJournalName = sqlite3MallocZero(nMasterJournalName)))
+      || (SQLITE_OK != (rc = sqlite3OsRead(pMasterStore,zMasterJournalName,nMasterJournalName,szW-8-4-4-nMasterJournalName)))
+      || (SQLITE_OK != (rc = read32bits(pMasterStore,szW-8-4-4-nMasterJournalName-4,&storedMxFrame)))
+      ){
+
 
         if(zMasterJournalName){
             sqlite3_free(zMasterJournalName);
