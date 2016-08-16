@@ -533,7 +533,9 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
           /* Write the extra pages and truncate the database file as required */
           iEnd = MIN(PENDING_BYTE + pgszDest, iSize);
           for(
-            iOff+=pgszSrc
+              iOff=PENDING_BYTE+pgszSrc; 
+              rc==SQLITE_OK && iOff<iEnd; 
+              iOff+=pgszSrc
           ){
             PgHdr *pSrcPg = 0;
             const Pgno iSrcPg = (Pgno)((iOff/pgszSrc)+1);
