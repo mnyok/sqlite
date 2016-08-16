@@ -43,5 +43,3 @@ tsrc/
 .DS_Store
 *.out
 cscope*
-splited/sqlite3-all.c
-splited/*
