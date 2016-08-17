@@ -121,7 +121,9 @@ for {set i 1} {$i < $REPEATS} {incr i} {
       PRAGMA aux.journal_mode = WAL;
       CREATE TABLE t1(a PRIMARY KEY, b);
       CREATE TABLE aux.t2(a PRIMARY KEY, b);
+      
   }
+  db close
   
   do_test walcrash-3.$i.1 {
     crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
