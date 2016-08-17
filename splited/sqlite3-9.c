@@ -6953,13 +6953,7 @@ SQLITE_PRIVATE const char *sqlite3PagerWalMasterStorename(Pager *pPager){
 ** Return the full pathname of the journal file.
 */
 SQLITE_PRIVATE const char *sqlite3PagerJournalname(Pager *pPager){
-#if SQLITE_OMIT_WAL
     return pPager->zJournal;
-#else
-    return pPager->pWal ? pPager->zWal : pPager->zJournal;
-#endif
-
-
 }
 
 #ifdef SQLITE_HAS_CODEC

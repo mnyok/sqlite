@@ -1156,6 +1156,7 @@ int writeWalMasterStoreFile(Pager* pPager, const char* zMaster,const char* zMast
    
 }
 
+
 int walReadMasterJournal(sqlite3_file* pMasterStore ,char* zMasterPtr, u32 nMasterPtrBufferLength, u32* mxFrameToRecover){
    
     int rc = SQLITE_OK;
@@ -1213,13 +1214,14 @@ error: //chksum이 0이 안 되거나 read같은곳에서 에러 발생
 }
 
 
-int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback, char* zMasterJournalName, u32 nMasterPtrBufferLength){
+int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback, char** zMasterJournalName){
 
 
     int rc = SQLITE_OK;
     sqlite3_file* pMasterStore = 0;
     int res = 0;
     u32 storedMxFrame = UINT32_MAX;
+    i64 nMasterJournalName = 0;
 
 //    *shouldRollback = 1; // 일단 1으로 해놓고
 //    *mxFrameToRecover = storedMxFrame; // 일단 UINT32_MAX로 해놓고
@@ -1241,13 +1243,22 @@ int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollb
     }
 
 
-    rc = walReadMasterJournal(pMasterStore, zMasterJournalName, nMasterPtrBufferLength, &storedMxFrame); //mxFrame이랑 master journal name을 읽어들임
+    
+    nMasterJournalName = pWal->pVfs->mxPathname;
+    *zMasterJournalName = sqlite3MallocZero(nMasterJournalName);
+    
+    if(*zMasterJournalName == 0){
+        rc = SQLITE_NOMEM_BKPT;
+        goto should_not_rollback;
+    }
+    
+    rc = walReadMasterJournal(pMasterStore, *zMasterJournalName, nMasterJournalName, &storedMxFrame); //mxFrame이랑 master journal name을 읽어들임
     
     if(rc!=SQLITE_OK){ // 에러나면 롤백 ㄴ
         goto should_not_rollback;
     }
 
-    rc = sqlite3OsAccess(pWal->pVfs, zMasterJournalName, SQLITE_ACCESS_EXISTS, &res); //그 마스터 저널 파일이 있는지 확인
+    rc = sqlite3OsAccess(pWal->pVfs, *zMasterJournalName, SQLITE_ACCESS_EXISTS, &res); //그 마스터 저널 파일이 있는지 확인
 
     if(rc != SQLITE_OK || !res){ //master journal file이 없으면 hot하지 않으므로 복구할 필요 없음
         goto should_not_rollback;
@@ -1259,13 +1270,24 @@ int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollb
 finish:
     *shouldRollback = 1;
     *mxFrameToRecover = storedMxFrame;
-    sqlite3OsCloseFree(pMasterStore);
+    
+    if(pMasterStore){
+        sqlite3OsCloseFree(pMasterStore);
+    }
     return rc;
 
 should_not_rollback:
+    if(zMasterJournalName){
+        sqlite3_free(*zMasterJournalName);
+        *zMasterJournalName = 0;
+    }
+    
     *shouldRollback = 0;
     *mxFrameToRecover = UINT32_MAX;
-    sqlite3OsCloseFree(pMasterStore);
+    
+    if(pMasterStore){
+        sqlite3OsCloseFree(pMasterStore);
+    }
     return rc;
 
 }
@@ -1291,7 +1313,8 @@ static int walIndexRecover(Wal *pWal){
   int shouldRollback = 0;
   i64 iOffset = 0;                  /* Next offset to read from log file */
   char* zMasterJournalName = 0;
-  i64 nMasterJournalName = 0;
+    
+//  i64 nMasterJournalName = 0;
   /* Obtain an exclusive lock on all byte in the locking range not already
   ** locked by the caller. The caller is guaranteed to have locked the
   ** WAL_WRITE_LOCK byte, and may have also locked the WAL_CKPT_LOCK byte.
@@ -1310,10 +1333,8 @@ static int walIndexRecover(Wal *pWal){
   }
   WALTRACE(("WAL%p: recovery begin...\n", pWal));
 
-  nMasterJournalName = pWal->pVfs->mxPathname;
-  zMasterJournalName = sqlite3MallocZero(nMasterJournalName);
-    
-  rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover,&shouldRollback,zMasterJournalName,nMasterJournalName);
+
+  rc = walMxFrameFromMasterStore(pWal,&mxFrameToRecover,&shouldRollback,&zMasterJournalName);
     
   if(rc!=SQLITE_OK){
       goto recovery_error;
@@ -1445,9 +1466,13 @@ finished:
             goto recovery_error;
         }
     }
-      
-    rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName); //최종적으로 master journal을 확인하여 지움
-  
+    
+    if(zMasterJournalName){
+        rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName); //최종적으로 master journal을 확인하여 지움
+        if(rc!=SQLITE_OK){
+            goto recovery_error;
+        }
+    }
       
       
       
@@ -1482,8 +1507,9 @@ finished:
   }
 
 recovery_error:
-    
+  
   sqlite3_free(zMasterJournalName);
+  
     
   WALTRACE(("WAL%p: recovery %s\n", pWal, rc ? "failed" : "ok"));
   walUnlockExclusive(pWal, iLock, nLock);

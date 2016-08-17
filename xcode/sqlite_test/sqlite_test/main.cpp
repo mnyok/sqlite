@@ -94,9 +94,9 @@ void read_both(sqlite3* db){
 
 void read(sqlite3* db){
     
-    sqlite3_open_v2("test2.db", &db, SQLITE_OPEN_READWRITE, nil);
+    sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
     
-    sql_execute(db, "select * from t2");
+    sql_execute(db, "select * from t1");
     
     sqlite3_close(db);
 }
