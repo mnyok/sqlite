@@ -109,36 +109,48 @@ for {set i 1} {$i < $REPEATS} {incr i} {
 }
 
 # walcrash-3.*
-#
-# for {set i 1} {$i < $REPEATS} {incr i} {
-#   forcedelete test.db test.db-wal
-#   forcedelete test2.db test2.db-wal
-#
-#   do_test walcrash-3.$i.1 {
-#     crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
-#       PRAGMA journal_mode = WAL;
-#       ATTACH 'test2.db' AS aux;
-#       CREATE TABLE t1(a PRIMARY KEY, b);
-#       CREATE TABLE aux.t2(a PRIMARY KEY, b);
-#       BEGIN;
-#         INSERT INTO t1 VALUES(1, 2);
-#         INSERT INTO t2 VALUES(1, 2);
-#       COMMIT;
-#     }
-#   } {1 {child process exited abnormally}}
-#
-#   do_test walcrash-3.$i.2 {
-#     sqlite3_wal db test.db
-#     execsql {
-#       ATTACH 'test2.db' AS aux;
-#       SELECT * FROM t1 EXCEPT SELECT * FROM t2;
-#     }
-#   } {}
-#   do_test walcrash-3.$i.3 { execsql { PRAGMA main.integrity_check } } {ok}
-#   do_test walcrash-3.$i.4 { execsql { PRAGMA aux.integrity_check  } } {ok}
-#
-#   db close
-# }
+
+for {set i 1} {$i < $REPEATS} {incr i} {
+  forcedelete test.db test.db-wal test.db-shm
+  forcedelete test2.db test2.db-wal test.db-shm
+  
+  sqlite3 db test.db
+  execsql {
+      PRAGMA journal_mode = WAL;
+      ATTACH 'test2.db' AS aux;
+      PRAGMA aux.journal_mode = WAL;
+      CREATE TABLE t1(a PRIMARY KEY, b);
+      CREATE TABLE aux.t2(a PRIMARY KEY, b);
+  }
+  
+  do_test walcrash-3.$i.1 {
+    crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
+      ATTACH 'test2.db' AS aux;
+      BEGIN;
+        INSERT INTO t1 VALUES(1, 2);
+        INSERT INTO t2 VALUES(1, 2);
+        
+        INSERT INTO t1 VALUES(2, 3);
+        INSERT INTO t2 VALUES(2, 3);
+        
+        INSERT INTO t1 VALUES(3, 4);
+        INSERT INTO t2 VALUES(3, 4);
+      COMMIT;
+    }
+  } {1 {child process exited abnormally}}
+exit
+  do_test walcrash-3.$i.2 {
+    sqlite3 db test.db
+    execsql {
+      ATTACH 'test2.db' AS aux;
+      SELECT * FROM t1 EXCEPT SELECT * FROM t2;
+    }
+  } {}
+  do_test walcrash-3.$i.3 { execsql { PRAGMA main.integrity_check } } {ok}
+  do_test walcrash-3.$i.4 { execsql { PRAGMA aux.integrity_check  } } {ok}
+
+  db close
+}
 
 # walcrash-4.*
 #

@@ -2453,8 +2453,8 @@ static int pager_playback_one_page(
 ** a couple of kilobytes or so - potentially larger than the page
 ** size.
 */
-static int pager_delmaster(Pager *pPager, const char *zMaster){
-  sqlite3_vfs *pVfs = pPager->pVfs;
+static int pager_delmaster(sqlite3_vfs *pVfs, Wal *pWal, const char *zMaster){
+  // sqlite3_vfs *pVfs = pPager->pVfs;
   int rc;                   /* Return code */
   sqlite3_file *pMaster;    /* Malloc'd master-journal file descriptor */
   sqlite3_file *pJournal;   /* Malloc'd child-journal file descriptor */
@@ -2507,26 +2507,37 @@ static int pager_delmaster(Pager *pPager, const char *zMaster){
       goto delmaster_out;
     }
 
-    if((9 <= nJournal)
-     && (0 == memcmp(&zJournal[nJournal-9],"-mj-store",9))){
-      rc = sqlite3WalReadMasterJournal(pPager, pJournal, zMasterPtr, nMasterPtr);
-    }else{
-      rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
-    }
+    
 
     if( exists ){
-      /* One of the journals pointed to by the master journal exists.
-      ** Open it and check if it points at the master journal. If
-      ** so, return without deleting the master journal file.
-      */
-      int c;
-      int flags = (SQLITE_OPEN_READONLY|SQLITE_OPEN_MAIN_JOURNAL);
-      rc = sqlite3OsOpen(pVfs, zJournal, pJournal, flags, 0);
-      if( rc!=SQLITE_OK ){
-        goto delmaster_out;
-      }
+        /* One of the journals pointed to by the master journal exists.
+        ** Open it and check if it points at the master journal. If
+        ** so, return without deleting the master journal file.
+        */
+        int c;
+        int flags = 0;
+          
+      
+        if((9 <= nJournal)
+         && (0 == memcmp(&zJournal[nJournal-9],"-mj-store",9))){
+            
+            rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, &c);
+            if( rc!=SQLITE_OK ){
+                goto delmaster_out;
+            }
 
-      rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+            rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+        }else{
+            
+            flags = (SQLITE_OPEN_READONLY | SQLITE_OPEN_MAIN_JOURNAL);
+            rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, &c);
+            if( rc!=SQLITE_OK ){
+                goto delmaster_out;
+            }
+            
+          rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+        }
+
       sqlite3OsClose(pJournal);
       if( rc!=SQLITE_OK ){
         goto delmaster_out;
@@ -2898,7 +2909,7 @@ end_playback:
     /* If there was a master journal and this routine will return success,
     ** see if it is possible to delete the master journal.
     */
-    rc = pager_delmaster(pPager, zMaster);
+    rc = pager_delmaster(pPager->pVfs, pPager->pWal, zMaster);
     testcase( rc!=SQLITE_OK );
   }
   if( isHot && nPlayback ){
@@ -6781,13 +6792,7 @@ const char *sqlite3PagerWalMasterStorename(Pager *pPager){
 ** Return the full pathname of the journal file.
 */
 const char *sqlite3PagerJournalname(Pager *pPager){
-#if SQLITE_OMIT_WAL
     return pPager->zJournal;
-#else
-    return pPager->pWal ? pPager->zWal : pPager->zJournal;
-#endif
-
-
 }
 
 #ifdef SQLITE_HAS_CODEC

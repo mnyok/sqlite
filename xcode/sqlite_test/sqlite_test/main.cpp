@@ -82,11 +82,23 @@ void create_db_and_make_table_and_set_journaling(sqlite3** db,const char* name, 
     
 }
 
+void read_both(sqlite3* db){
+    sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
+    
+    sql_execute(db,"attach 'test2.db' as aux");
+    
+    sql_execute(db, "select * from t1 except select * from t2",true);
+    
+    sqlite3_close(db);
+}
+
 void read(sqlite3* db){
     
     sqlite3_open_v2("test2.db", &db, SQLITE_OPEN_READWRITE, nil);
     
     sql_execute(db, "select * from t2");
+    
+    sqlite3_close(db);
 }
 
 void transaction(sqlite3* db,sqlite3* db2){
@@ -124,7 +136,8 @@ int main(){
     sqlite3_config(SQLITE_CONFIG_LOG,sql_log);
     
  
-    read(db);
+    read_both(db);
+//    read(db);
 //    transaction(db,db2);
     
     

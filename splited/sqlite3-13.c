@@ -11,7 +11,7 @@
 **
 *************************************************************************
 ** This file contains code used for creating, destroying, and populating
-** a VDBE (or an "sqlite3_stmt" as it is known to the outside world.) 
+** a VDBE (or an "sqlite3_stmt" as it is known to the outside world.)
 */
 /* #include "sqliteInt.h" */
 /* #include "vdbeInt.h" */
@@ -2321,21 +2321,21 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     for(i=0; i<db->nDb; i++){
       Btree *pBt = db->aDb[i].pBt;
       if( sqlite3BtreeIsInTrans(pBt) ){
-          Pager* pPager;
-          char const *zFile = 0;
-          
-          sqlite3BtreeEnter(pBt);
-          pPager = sqlite3BtreePager(pBt);
-          
-          if(pagerUseWal(pPager)) {
-              zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
-          }else{
-              zFile = sqlite3BtreeGetJournalname(pBt);
-          }
-          
-          sqlite3BtreeLeave(pBt);
 
-          
+        Pager* pPager;
+        char const *zFile = 0;
+
+        sqlite3BtreeEnter(pBt);
+        pPager = sqlite3BtreePager(pBt);
+
+        if(pagerUseWal(pPager)) {
+            zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
+        }else{
+            zFile = sqlite3BtreeGetJournalname(pBt);
+        }
+
+        sqlite3BtreeLeave(pBt);
+
         if( zFile==0 ){
           continue;  /* Ignore TEMP and :memory: databases */
         }
@@ -2398,28 +2398,28 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     if( rc ){
       return rc;
     }
-      
-      
+    
     /*
-     Delete the wal master store file.
+    Delete the wal master store file.
     */
-      
+
     for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
         Btree *pBt = db->aDb[i].pBt;
         Pager* pPager;
-        
+
         if( pBt){
             pPager = sqlite3BtreePager(pBt);
             if(pagerUseWal(pPager)){
-            
+
                 rc = sqlite3OsDelete(pPager->pVfs,pPager->pWal->zWalMasterStore,0);
-                
+
                 if(rc!=SQLITE_OK){
                     return rc;
                 }
             }
         }
     }
+
 
     /* All files and directories have already been synced, so the following
     ** calls to sqlite3BtreeCommitPhaseTwo() are only closing files and

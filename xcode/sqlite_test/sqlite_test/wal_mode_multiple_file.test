@@ -1,34 +1,96 @@
 set testdir [file dirname $argv0]
 source $testdir/tester.tcl
 
+db close
+
+set seed 0
+set REPEATS 100
+# 
+# for {set i 1} {$i < $REPEATS} {incr i} {
+#   forcedelete test.db test.db-wal test.db-shm
+#   forcedelete test2.db test2.db-wal test2.db-shm
+# #  -seed [incr seed]
+#     do_test wal_mode_multiple_file {
+#         crashsql -delay 1 -file test2.db-wal {
+#           ATTACH 'test2.db' AS aux;
+#           BEGIN;
+#             INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+#             INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+#             INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+#             INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+#             INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+#             INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+# 
+# 
+#           COMMIT;
+#         }
+#     } {1 {child process exited abnormally}}
+#   
+#   exit
+# 
+#   do_test walcrash-3.$i.2 {
+#     sqlite3 db test.db
+#     execsql {
+#       ATTACH 'test2.db' AS aux;
+#       SELECT * FROM t1 EXCEPT SELECT * FROM t2;
+#     }
+#   } {}
+#   do_test walcrash-3.$i.3 { execsql { PRAGMA main.integrity_check } } {ok}
+#   do_test walcrash-3.$i.4 { execsql { PRAGMA aux.integrity_check  } } {ok}
+# 
+#   db close
+# }
+
 forcedelete *mj* test.db test2.db test.db-wal test2.db-wal
 
 sqlite3 db test.db
 execsql {
     pragma journal_mode = wal;
-    create table t1 (a,b,c);
+    create table t1 (a primary key ,b,c);
+    pragma wal_checkpoint(full);
 }
-sqlite3 db test2.db
+db close
 
+sqlite3 db test2.db
 execsql {
     pragma journal_mode = wal;
-    create table t2 (a,b,c);
+    create table t2 (a primary key ,b,c);
+    pragma wal_checkpoint(full);
 }
+db close
 
 #-opendb { sqlite3 db test2.db -vfs crash }
 
 do_test wal_mode_multiple_file {
-    crashsql -delay 1 -file test2.db-wal {
+    crashsql -delay 2 -file test2.db-wal {
       ATTACH 'test2.db' AS aux;
       BEGIN;
-        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-        INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-        INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
-
+        --INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        --INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        --INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        --INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        --INSERT INTO t1 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        --INSERT INTO t2 VALUES(randomblob(1024), randomblob(1024), randomblob(1024));
+        
+        INSERT INTO t1 VALUES(1, 2, 3);
+        INSERT INTO t2 VALUES(1, 2, 3);
+        
+        INSERT INTO t1 VALUES(2, 2, 3);
+        INSERT INTO t2 VALUES(2, 2, 3);
+        
+        INSERT INTO t1 VALUES(3, 2, 3);
+        INSERT INTO t2 VALUES(3, 2, 3);
 
       COMMIT;
     }
 } {1 {child process exited abnormally}}
+
+exit
+
+do_test integrity_test {
+  sqlite3 db test.db
+  execsql {
+    ATTACH 'test2.db' AS aux;
+    SELECT * FROM t1 EXCEPT SELECT * FROM t2;
+  }
+} {}

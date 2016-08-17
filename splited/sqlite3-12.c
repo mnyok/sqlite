@@ -534,9 +534,9 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
           /* Write the extra pages and truncate the database file as required */
           iEnd = MIN(PENDING_BYTE + pgszDest, iSize);
           for(
-            iOff=PENDING_BYTE+pgszSrc; 
-            rc==SQLITE_OK && iOff<iEnd; 
-            iOff+=pgszSrc
+              iOff=PENDING_BYTE+pgszSrc; 
+              rc==SQLITE_OK && iOff<iEnd; 
+              iOff+=pgszSrc
           ){
             PgHdr *pSrcPg = 0;
             const Pgno iSrcPg = (Pgno)((iOff/pgszSrc)+1);
@@ -559,7 +559,6 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
           sqlite3PagerTruncateImage(pDestPager, nDestTruncate);
           rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 0);
         }
-    
         /* Finish committing the transaction to the destination database. */
         if( SQLITE_OK==rc
          && SQLITE_OK==(rc = sqlite3BtreeCommitPhaseTwo(p->pDest, 0))
@@ -568,7 +567,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
         }
       }
     }
-  
+
     /* If bCloseTrans is true, then this function opened a read transaction
     ** on the source database. Close the read transaction here. There is
     ** no need to check the return values of the btree methods here, as
@@ -580,7 +579,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_step(sqlite3_backup *p, int nPage){
       TESTONLY( rc2 |= ) sqlite3BtreeCommitPhaseTwo(p->pSrc, 0);
       assert( rc2==SQLITE_OK );
     }
-  
+
     if( rc==SQLITE_IOERR_NOMEM ){
       rc = SQLITE_NOMEM_BKPT;
     }
@@ -660,7 +659,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_remaining(sqlite3_backup *p){
 }
 
 /*
-** Return the total number of pages in the source database as of the most 
+** Return the total number of pages in the source database as of the most
 ** recent call to sqlite3_backup_step().
 */
 SQLITE_API int SQLITE_STDCALL sqlite3_backup_pagecount(sqlite3_backup *p){
@@ -675,7 +674,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_backup_pagecount(sqlite3_backup *p){
 
 /*
 ** This function is called after the contents of page iPage of the
-** source database have been modified. If page iPage has already been 
+** source database have been modified. If page iPage has already been
 ** copied into the destination database, then the data written to the
 ** destination is now invalidated. The destination copy of iPage needs
 ** to be updated with the new data before the backup operation is
@@ -718,7 +717,7 @@ SQLITE_PRIVATE void sqlite3BackupUpdate(sqlite3_backup *pBackup, Pgno iPage, con
 ** Restart the backup process. This is called when the pager layer
 ** detects that the database has been modified by an external database
 ** connection. In this case there is no way of knowing which of the
-** pages that have been copied into the destination database are still 
+** pages that have been copied into the destination database are still
 ** valid and which are not, so the entire process needs to be restarted.
 **
 ** It is assumed that the mutex associated with the BtShared object
@@ -738,8 +737,8 @@ SQLITE_PRIVATE void sqlite3BackupRestart(sqlite3_backup *pBackup){
 ** Copy the complete content of pBtFrom into pBtTo.  A transaction
 ** must be active for both files.
 **
-** The size of file pTo may be reduced by this operation. If anything 
-** goes wrong, the transaction on pTo is rolled back. If successful, the 
+** The size of file pTo may be reduced by this operation. If anything
+** goes wrong, the transaction on pTo is rolled back. If successful, the
 ** transaction is committed before returning.
 */
 SQLITE_PRIVATE int sqlite3BtreeCopyFile(Btree *pTo, Btree *pFrom){
@@ -775,9 +774,9 @@ SQLITE_PRIVATE int sqlite3BtreeCopyFile(Btree *pTo, Btree *pFrom){
 
   /* 0x7FFFFFFF is the hard limit for the number of pages in a database
   ** file. By passing this as the number of pages to copy to
-  ** sqlite3_backup_step(), we can guarantee that the copy finishes 
+  ** sqlite3_backup_step(), we can guarantee that the copy finishes
   ** within a single call (unless an error occurs). The assert() statement
-  ** checks this assumption - (p->rc) should be set to either SQLITE_DONE 
+  ** checks this assumption - (p->rc) should be set to either SQLITE_DONE
   ** or an error code.
   */
   sqlite3_backup_step(&b, 0x7FFFFFFF);

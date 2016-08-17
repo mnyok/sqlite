@@ -3,6 +3,14 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "walIndexReadHdr:sqlite3-10.c">
+         <PersistentStrings>
+            <PersistentString
+               value = "pWal-&gt;zWalName">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "vdbeCommit:sqlite3-13.c">
          <PersistentStrings>
             <PersistentString
