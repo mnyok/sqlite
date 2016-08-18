@@ -111,8 +111,8 @@ for {set i 1} {$i < $REPEATS} {incr i} {
 # walcrash-3.*
 
 for {set i 1} {$i < $REPEATS} {incr i} {
-  forcedelete test.db test.db-wal test.db-shm
-  forcedelete test2.db test2.db-wal test2.db-shm
+  forcedelete test.db test.db-wal test.db-shm test.db-mj-store
+  forcedelete test2.db test2.db-wal test2.db-shm test2.db-mj-store
 
   sqlite3 db test.db
   execsql {
@@ -121,10 +121,10 @@ for {set i 1} {$i < $REPEATS} {incr i} {
       PRAGMA aux.journal_mode = WAL;
       CREATE TABLE t1(a PRIMARY KEY, b);
       CREATE TABLE aux.t2(a PRIMARY KEY, b);
-
+      PRAGMA WAL_CHECKPOINT(FULL);
   }
   
-  db close
+  #db close
   
   do_test walcrash-3.$i.1 {
     crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
@@ -132,6 +132,9 @@ for {set i 1} {$i < $REPEATS} {incr i} {
       BEGIN;
         INSERT INTO t1 VALUES(1, 2);
         INSERT INTO t2 VALUES(1, 2);
+        
+        INSERT INTO t1 VALUES(2, 2);
+        INSERT INTO t2 VALUES(2, 2);
       COMMIT;
     }
   } {1 {child process exited abnormally}}
@@ -149,6 +152,7 @@ for {set i 1} {$i < $REPEATS} {incr i} {
 
   db close
 }
+
 
 # walcrash-4.*
 #

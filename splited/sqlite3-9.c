@@ -62,7 +62,7 @@
 # define sqlite3WalUndo(x,y,z)                   0
 # define sqlite3WalSavepoint(y,z)
 # define sqlite3WalSavepointUndo(y,z)            0
-# define sqlite3WalFrames(u,v,w,x,y,z)           0
+# define sqlite3WalFrames(t,u,v,w,x,y,z)         0
 # define sqlite3WalCheckpoint(r,s,t,u,v,w,x,y,z) 0
 # define sqlite3WalCallback(z)                   0
 # define sqlite3WalExclusiveMode(y,z)            0
@@ -123,7 +123,7 @@ SQLITE_PRIVATE void sqlite3WalSavepoint(Wal *pWal, u32 *aWalData);
 SQLITE_PRIVATE int sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
 
 /* Write a frame or frames to the log. */
-SQLITE_PRIVATE int sqlite3WalFrames(Wal *pWal, int, PgHdr *, Pgno, int, int);
+SQLITE_PRIVATE int sqlite3WalFrames(Pager *pPager, int, PgHdr *, Pgno, int, int, const char*);
 
 /* Copy pages from the log to the database file */
 SQLITE_PRIVATE int sqlite3WalCheckpoint(
@@ -985,7 +985,7 @@ static int pagerUseWal(Pager *pPager){
 #else
 # define pagerUseWal(x) 0
 # define pagerRollbackWal(x) 0
-# define pagerWalFrames(v,w,x,y) 0
+# define pagerWalFrames(v,w,x,y,z) 0
 # define pagerOpenWalIfPresent(z) SQLITE_OK
 # define pagerBeginReadTransaction(z) SQLITE_OK
 #endif
@@ -3262,7 +3262,8 @@ static int pagerWalFrames(
   Pager *pPager,                  /* Pager object */
   PgHdr *pList,                   /* List of frames to log */
   Pgno nTruncate,                 /* Database size after this commit */
-  int isCommit                    /* True if this is a commit */
+  int isCommit,                    /* True if this is a commit */
+  const char* zMaster
 ){
   int rc;                         /* Return code */
   int nList;                      /* Number of pages in pList */
@@ -3298,9 +3299,8 @@ static int pagerWalFrames(
   pPager->aStat[PAGER_STAT_WRITE] += nList;
 
   if( pList->pgno==1 ) pager_write_changecounter(pList);
-  rc = sqlite3WalFrames(pPager->pWal,
-      pPager->pageSize, pList, nTruncate, isCommit, pPager->walSyncFlags
-  );
+  rc = sqlite3WalFrames(pPager,
+      pPager->pageSize, pList, nTruncate, isCommit, pPager->walSyncFlags, zMaster);
   if( rc==SQLITE_OK && pPager->pBackup ){
     for(p=pList; p; p=p->pDirty){
       sqlite3BackupUpdate(pPager->pBackup, p->pgno, (u8 *)p->pData);
@@ -4674,7 +4674,7 @@ static int pagerStress(void *p, PgHdr *pPg){
     /* Write a single frame for this page to the log. */
     rc = subjournalPageIfRequired(pPg);
     if( rc==SQLITE_OK ){
-      rc = pagerWalFrames(pPager, pPg, 0, 0);
+      rc = pagerWalFrames(pPager, pPg, 0, 0, 0);
     }
   }else{
 
@@ -6409,15 +6409,6 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
   }else{
     if( pagerUseWal(pPager) ){
         
-      /*
-       write wal master store file
-       */
-        
-    
-      rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
-      if(rc!=SQLITE_OK) goto commit_phase_one_exit;
-        
-        
       PgHdr *pList = sqlite3PcacheDirtyList(pPager->pPCache);
       PgHdr *pPageOne = 0;
       if( pList==0 ){
@@ -6429,7 +6420,7 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
       }
       assert( rc==SQLITE_OK );
       if( ALWAYS(pList) ){
-        rc = pagerWalFrames(pPager, pList, pPager->dbSize, 1);
+        rc = pagerWalFrames(pPager, pList, pPager->dbSize, 1, zMaster);
       }
       sqlite3PagerUnref(pPageOne);
       if( rc==SQLITE_OK ){

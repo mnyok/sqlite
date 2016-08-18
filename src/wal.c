@@ -1110,11 +1110,11 @@ int writeWalMasterStoreFile(Pager* pPager, const char* zMaster, const char* zMas
    nMaster = sqlite3Strlen30(zMaster);
    mxFrame = sqlite3WalMxFrame(pPager->pWal);
 
-   rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
-   
-   if( rc!=SQLITE_OK ){
-       return rc;
-   }
+   // rc = sqlite3OsAccess(pPager->pVfs, zMasterStore, SQLITE_ACCESS_EXISTS, &res);
+   // 
+   // if( rc!=SQLITE_OK ){
+   //     return rc;
+   // }
    
    rc = sqlite3OsOpenMalloc(pPager->pVfs, zMasterStore, &pMasterStore,SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE|SQLITE_OPEN_EXCLUSIVE, 0);
    
@@ -1324,17 +1324,15 @@ should_not_rollback:
 ** that this thread is running recovery.  If unable to establish
 ** the necessary locks, this routine returns SQLITE_BUSY.
 */
-static int walIndexRecover(Wal *pWal){
+static int walIndexRecover(Wal *pWal, int shouldRollback, u32 mxFrameToRecover,i64* offsetToTruncate){
   int rc;                         /* Return Code */
   i64 nSize;                      /* Size of log file */
   u32 aFrameCksum[2] = {0, 0};
   int iLock;                      /* Lock offset to lock for checkpoint */
   int nLock;                      /* Number of locks to hold */
-  u32 mxFrameToRecover = UINT32_MAX; /* mxFrame From master store file */
-  int shouldRollback = 0;
-  i64 iOffset = 0;                  /* Next offset to read from log file */
-  char* zMasterJournalName = 0;   /* Name of master journal file */
 
+  i64 iOffset = 0;                  /* Next offset to read from log file */
+  
   /* Obtain an exclusive lock on all byte in the locking range not already
   ** locked by the caller. The caller is guaranteed to have locked the
   ** WAL_WRITE_LOCK byte, and may have also locked the WAL_CKPT_LOCK byte.
@@ -1354,11 +1352,13 @@ static int walIndexRecover(Wal *pWal){
   WALTRACE(("WAL%p: recovery begin...\n", pWal));
 
 
-  rc = walMxFrameFromMasterStore(pWal, &mxFrameToRecover, &shouldRollback, &zMasterJournalName);
+//  rc = walMxFrameFromMasterStore(pWal, &mxFrameToRecover, &shouldRollback, &zMasterJournalName);
+//  
+//  printf("%s recover to %u\n",pWal->zWalName,mxFrameToRecover);
     
-  if( rc!=SQLITE_OK ){
-      goto recovery_error;
-  };
+//  if( rc!=SQLITE_OK ){
+//      goto recovery_error;
+//  };
 
     
   memset(&pWal->hdr, 0, sizeof(WalIndexHdr));
@@ -1475,24 +1475,8 @@ static int walIndexRecover(Wal *pWal){
 finished:
   if( rc==SQLITE_OK ){
       
-    if(shouldRollback){ //롤백을 했으면
-        if(   (SQLITE_OK != (rc != sqlite3OsTruncate(pWal->pWalFd, iOffset))) //wal 파일을 자르고
-           || (SQLITE_OK != (rc != sqlite3OsSync(pWal->pWalFd, pWal->syncFlags)))){ // 싱크하고(사실 이게 필요한진 모르겠음)
-            goto recovery_error; //에러나면 에러로
-        }
-        
-        rc = sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0); //wal master store가 이제 필요 없으니 지우고
-        if(rc != SQLITE_OK){
-            goto recovery_error;
-        }
-    }
-    
-    if(zMasterJournalName){
-        rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName); //최종적으로 master journal을 확인하여 지움
-        if(rc!=SQLITE_OK){
-            goto recovery_error;
-        }
-    }
+      *offsetToTruncate = iOffset;
+      
       
       
       
@@ -1528,7 +1512,7 @@ finished:
 
 recovery_error:
   
-  sqlite3_free(zMasterJournalName);
+ 
   
     
   WALTRACE(("WAL%p: recovery %s\n", pWal, rc ? "failed" : "ok"));
@@ -2349,65 +2333,105 @@ static int walIndexTryHdr(Wal *pWal, int *pChanged){
 ** Otherwise an SQLite error code.
 */
 static int walIndexReadHdr(Wal *pWal, int *pChanged){
-  int rc;                         /* Return code */
-  int badHdr;                     /* True if a header read failed */
-  volatile u32 *page0;            /* Chunk of wal-index containing header */
-
-  /* Ensure that page 0 of the wal-index (the page that contains the
-  ** wal-index header) is mapped. Return early if an error occurs here.
-  */
-  assert( pChanged );
-  rc = walIndexPage(pWal, 0, &page0);
-  if( rc!=SQLITE_OK ){
-    return rc;
-  };
-  assert( page0 || pWal->writeLock==0 );
-
-  /* If the first page of the wal-index has been mapped, try to read the
-  ** wal-index header immediately, without holding any lock. This usually
-  ** works, but may fail if the wal-index header is corrupt or currently
-  ** being modified by another thread or process.
-  */
-  badHdr = (page0 ? walIndexTryHdr(pWal, pChanged) : 1);
-
-  /* If the first attempt failed, it might have been due to a race
-  ** with a writer.  So get a WRITE lock and try again.
-  */
-  assert( badHdr==0 || pWal->writeLock==0 );
-  if( badHdr ){
-    if( pWal->readOnly & WAL_SHM_RDONLY ){
-      if( SQLITE_OK==(rc = walLockShared(pWal, WAL_WRITE_LOCK)) ){
-        walUnlockShared(pWal, WAL_WRITE_LOCK);
-        rc = SQLITE_READONLY_RECOVERY;
-      }
-    }else if( SQLITE_OK==(rc = walLockExclusive(pWal, WAL_WRITE_LOCK, 1)) ){
-      pWal->writeLock = 1;
-      if( SQLITE_OK==(rc = walIndexPage(pWal, 0, &page0)) ){
-        badHdr = walIndexTryHdr(pWal, pChanged);
-        if( badHdr ){
-          /* If the wal-index header is still malformed even while holding
-          ** a WRITE lock, it can only mean that the header is corrupted and
-          ** needs to be reconstructed.  So run recovery to do exactly that.
-          */
-          rc = walIndexRecover(pWal);
-          *pChanged = 1;
-        }
-      }
-      pWal->writeLock = 0;
-      walUnlockExclusive(pWal, WAL_WRITE_LOCK, 1);
+    int rc;                         /* Return code */
+    int badHdr;                     /* True if a header read failed */
+    //int shouldRollback = 0;
+    volatile u32 *page0;            /* Chunk of wal-index containing header */
+    //  u32 mxFrameToRecover;
+    //  char* zMasterJournalName;
+    char* zMasterJournalName = 0;   /* Name of master journal file */
+    i64 iOffset = 0;
+    //    i64 nMasterJournalName;
+    u32 mxFrameToRecover = UINT32_MAX; /* mxFrame From master store file */
+    int shouldRollback = 0;
+    /* Ensure that page 0 of the wal-index (the page that contains the
+     ** wal-index header) is mapped. Return early if an error occurs here.
+     */
+    assert( pChanged );
+    rc = walIndexPage(pWal, 0, &page0);
+    if( rc!=SQLITE_OK ){
+        return rc;
+    };
+    assert( page0 || pWal->writeLock==0 );
+    
+    /* If the first page of the wal-index has been mapped, try to read the
+     ** wal-index header immediately, without holding any lock. This usually
+     ** works, but may fail if the wal-index header is corrupt or currently
+     ** being modified by another thread or process.
+     */
+    badHdr = (page0 ? walIndexTryHdr(pWal, pChanged) : 1);
+    rc = walMxFrameFromMasterStore(pWal, &mxFrameToRecover, &shouldRollback, &zMasterJournalName);
+    if(rc!=SQLITE_OK){
+        return rc;
     }
-  }
-
-  /* If the header is read successfully, check the version number to make
-  ** sure the wal-index was not constructed with some future format that
-  ** this version of SQLite cannot understand.
-  */
-  if( badHdr==0 && pWal->hdr.iVersion!=WALINDEX_MAX_VERSION ){
-    rc = SQLITE_CANTOPEN_BKPT;
-  }
-
-  return rc;
+    
+    /* If the first attempt failed, it might have been due to a race
+     ** with a writer.  So get a WRITE lock and try again.
+     */
+    assert( badHdr==0 || pWal->writeLock==0 );
+    if( badHdr || shouldRollback){
+        if( pWal->readOnly & WAL_SHM_RDONLY ){
+            if( SQLITE_OK==(rc = walLockShared(pWal, WAL_WRITE_LOCK)) ){
+                walUnlockShared(pWal, WAL_WRITE_LOCK);
+                rc = SQLITE_READONLY_RECOVERY;
+            }
+        }else if( SQLITE_OK==(rc = walLockExclusive(pWal, WAL_WRITE_LOCK, 1)) ){
+            pWal->writeLock = 1;
+            if( SQLITE_OK==(rc = walIndexPage(pWal, 0, &page0)) ){
+                badHdr = walIndexTryHdr(pWal, pChanged);
+                if( badHdr || shouldRollback){
+                    /* If the wal-index header is still malformed even while holding
+                     ** a WRITE lock, it can only mean that the header is corrupted and
+                     ** needs to be reconstructed.  So run recovery to do exactly that.
+                     */
+                    rc = walIndexRecover(pWal,shouldRollback,mxFrameToRecover,&iOffset);
+                    
+                    if(rc!=SQLITE_OK){
+                        goto rollback_out;
+                    }
+                    
+                    if(shouldRollback){ //롤백을 했으면
+                        if(   (SQLITE_OK != (rc != sqlite3OsTruncate(pWal->pWalFd, iOffset))) //wal 파일을 자르고
+                           || (SQLITE_OK != (rc != sqlite3OsSync(pWal->pWalFd, pWal->syncFlags)))){ // 싱크하고(사실 이게 필요한진 모르겠음)
+                            sqlite3_free(zMasterJournalName);
+                            
+                            goto rollback_out;
+                            
+                        }
+                        
+                        rc = sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0); //wal master store가 이제 필요 없으니 지우고
+                        if(rc!=SQLITE_OK){
+                            goto rollback_out;
+                        }
+                    }
+                    
+                    if(zMasterJournalName){
+                        rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName); //최종적으로 master journal을 확인하여 지움
+                    }
+                    
+                    
+                rollback_out:
+                    sqlite3_free(zMasterJournalName);
+                    
+                    *pChanged = 1;
+                }
+            }
+            pWal->writeLock = 0;
+            walUnlockExclusive(pWal, WAL_WRITE_LOCK, 1);
+        }
+    }
+    
+    /* If the header is read successfully, check the version number to make
+     ** sure the wal-index was not constructed with some future format that
+     ** this version of SQLite cannot understand.
+     */
+    if( badHdr==0 && pWal->hdr.iVersion!=WALINDEX_MAX_VERSION ){
+        rc = SQLITE_CANTOPEN_BKPT;
+    }
+    
+    return rc;
 }
+
 
 /*
 ** This is the value that walTryBeginRead returns when it needs to
@@ -3242,13 +3266,15 @@ static int walRewriteChecksums(Wal *pWal, u32 iLast){
 ** on the log file (obtained using sqlite3WalBeginWriteTransaction()).
 */
 int sqlite3WalFrames(
-  Wal *pWal,                      /* Wal handle to write to */
+  Pager *pPager,                  /* Pager and Wal handle to write to */
   int szPage,                     /* Database page-size in bytes */
   PgHdr *pList,                   /* List of dirty pages to write */
   Pgno nTruncate,                 /* Database size after this commit */
   int isCommit,                   /* True if this is a commit */
-  int sync_flags                  /* Flags to pass to OsSync() (or 0) */
+  int sync_flags,                  /* Flags to pass to OsSync() (or 0) */
+  const char* zMaster
 ){
+  Wal* pWal;
   int rc;                         /* Used to catch return codes */
   u32 iFrame;                     /* Next frame address */
   PgHdr *p;                       /* Iterator to run through pList with. */
@@ -3259,6 +3285,7 @@ int sqlite3WalFrames(
   WalWriter w;                    /* The writer */
   u32 iFirst = 0;                 /* First frame that may be overwritten */
   WalIndexHdr *pLive;             /* Pointer to shared header */
+  pWal = pPager->pWal;
 
   assert( pList );
   assert( pWal->writeLock );
@@ -3284,6 +3311,14 @@ int sqlite3WalFrames(
   */
   if( SQLITE_OK!=(rc = walRestartLog(pWal)) ){
     return rc;
+  }
+  
+  /*
+  ** Write wal master store file
+  */
+  rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
+  if(rc!=SQLITE_OK){
+      return rc;
   }
 
   /* If this is the first frame written into the log, write the WAL

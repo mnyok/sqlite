@@ -138,9 +138,9 @@ void checkpoint_transaction_test(){
     
     sql_execute(db,"pragma aux.journal_mode = wal");
     sql_execute(db,"create table aux.t2(a, b, c)");
-    sql_execute(db,"pragma wal_checkpoint(restart)");
+    sql_execute(db,"pragma wal_checkpoint(full)");
     
-    sql_execute(db,"insert into t1 values (1,2,3)");
+//    sql_execute(db,"insert into t1 values (1,2,3)");
     
     sql_execute(db,"begin");
     
@@ -179,7 +179,7 @@ void checkpoint_only_test(){
     sqlite3* db;
     sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
     
-    sql_execute(db, "pragma wal_checkpoint(restart);");
+    sql_execute(db, "pragma wal_checkpoint(full);");
     
 }
 
@@ -193,10 +193,10 @@ int main(){
     
  
 //    checkpoint_only_test();
-    checkpoint_transaction_test();
+//    checkpoint_transaction_test();
 //    checkpoint_test();
-//    read_both(db);
-//    read(db);
+    read_both();
+//    read();
 //    transaction(db,db2);
     
     
