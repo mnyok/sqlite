@@ -1096,7 +1096,7 @@ int writeWalMasterStoreFile(Pager* pPager, const char* zMaster, const char* zMas
    int res;
    int nMaster = 0;
    u32 mxFrame;
-   u32 chksum;
+   u32 chksum = 0;
    int i;   
    
    assert( pagerUseWal(pPager) );
@@ -1178,7 +1178,7 @@ int walReadMasterJournal(sqlite3_file* pMasterStore, char* zMasterPtr, u32 nMast
     int rc = SQLITE_OK;
     i64 szW = 0;
     u32 nMasterJournalName = 0;
-    u32 chksum;
+    u32 chksum = 0;
     u8* aMagic[8];
     u32 storedMxFrame = UINT32_MAX;
     int i;
