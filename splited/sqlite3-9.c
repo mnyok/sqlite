@@ -6412,6 +6412,8 @@ SQLITE_PRIVATE int sqlite3PagerCommitPhaseOne(
       /*
        write wal master store file
        */
+        
+    
       rc = writeWalMasterStoreFile(pPager, zMaster, pPager->zWalMasterStore);
       if(rc!=SQLITE_OK) goto commit_phase_one_exit;
         

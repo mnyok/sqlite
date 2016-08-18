@@ -7,42 +7,34 @@ set seed 0
 set REPEATS 100
 
 for {set i 1} {$i < $REPEATS} {incr i} {
-  forcedelete test.db test.db-wal test.db-shm test.db-journal
-  forcedelete test2.db test2.db-wal test.db-shm test2.db-journal
-  
+  forcedelete test.db test.db-wal test.db-shm
+  forcedelete test2.db test2.db-wal test2.db-shm
+
   sqlite3 db test.db
   execsql {
-      PRAGMA journal_mode = DELETE;
+      PRAGMA journal_mode = WAL;
       ATTACH 'test2.db' AS aux;
-      PRAGMA aux.journal_mode = DELETE;
+      PRAGMA aux.journal_mode = WAL;
       CREATE TABLE t1(a PRIMARY KEY, b);
       CREATE TABLE aux.t2(a PRIMARY KEY, b);
-  
+      PRAGMA WAL_CHECKPOINT(FULL);
   }
-  db close
   
   do_test walcrash-3.$i.1 {
-    crashsql -delay 2 -file test2.db-journal -seed [incr seed] {
+    crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
       ATTACH 'test2.db' AS aux;
-      
       BEGIN;
         INSERT INTO t1 VALUES(1, 2);
         INSERT INTO t2 VALUES(1, 2);
-        
-        INSERT INTO t1 VALUES(2, 3);
-        INSERT INTO t2 VALUES(2, 3);
-        
-        INSERT INTO t1 VALUES(3, 4);
-        INSERT INTO t2 VALUES(3, 4);
       COMMIT;
     }
   } {1 {child process exited abnormally}}
   
-  # exit
-  
+  exit
+
   do_test walcrash-3.$i.2 {
     sqlite3 db test.db
-    execsql {
+    execsql { 
       ATTACH 'test2.db' AS aux;
       SELECT * FROM t1 EXCEPT SELECT * FROM t2;
     }

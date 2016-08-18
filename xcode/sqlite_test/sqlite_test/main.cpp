@@ -44,13 +44,9 @@ void change_directory_to_source_folder(){
     chdir(SRC_PATH "/testdir");
 }
 
-void delete_files(const char* name){
+void delete_files(){
     
-    remove(name);
-    remove(fstring("%s-wal",name));
-    remove(fstring("%s-shm",name));
-    remove(fstring("%s-journal",name));
-    remove(fstring("%s-mj-stored",name));
+    system("/bin/rm *");
     
 
 }
@@ -82,7 +78,9 @@ void create_db_and_make_table_and_set_journaling(sqlite3** db,const char* name, 
     
 }
 
-void read_both(sqlite3* db){
+void read_both(){
+    sqlite3* db;
+    
     sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
     
     sql_execute(db,"attach 'test2.db' as aux");
@@ -92,8 +90,9 @@ void read_both(sqlite3* db){
     sqlite3_close(db);
 }
 
-void read(sqlite3* db){
+void read(){
     
+    sqlite3* db;
     sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
     
     sql_execute(db, "select * from t1");
@@ -101,9 +100,11 @@ void read(sqlite3* db){
     sqlite3_close(db);
 }
 
-void transaction(sqlite3* db,sqlite3* db2){
-    delete_files("test.db");
-    delete_files("test2.db");
+void transaction(){
+    
+    sqlite3* db;
+    sqlite3* db2;
+    delete_files();
     
     create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
     
@@ -125,18 +126,76 @@ void transaction(sqlite3* db,sqlite3* db2){
     sqlite3_close(db);
 }
 
+void checkpoint_transaction_test(){
+
+    sqlite3* db;
+//    system("/bin/rm *");
+    delete_files();
+    
+    create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
+    
+    sql_execute(db,"attach 'test2.db' as aux");
+    
+    sql_execute(db,"pragma aux.journal_mode = wal");
+    sql_execute(db,"create table aux.t2(a, b, c)");
+    sql_execute(db,"pragma wal_checkpoint(restart)");
+    
+    sql_execute(db,"insert into t1 values (1,2,3)");
+    
+    sql_execute(db,"begin");
+    
+    for(int i = 0 ; i < 10 ; i ++){
+        
+        sql_execute(db, "insert into t1 values (randomblob(4),randomblob(4),randomblob(4))");
+        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
+    }
+    sql_execute(db,"commit");
+    
+    
+    sqlite3_close(db);
+}
+
+void checkpoint_test(){
+    
+    sqlite3* db;
+    
+    delete_files();
+    
+    sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nil);
+    
+    sql_execute(db, "pragma journal_mode = wal;");
+    sql_execute(db, "create table t1 (a primary key, b);");
+//    sql_execute(db, "pragma wal_checkpoint(full);");
+    sql_execute(db, "pragma wal_checkpoint(restart);");
+    
+    sql_execute(db, "insert into t1 values (1,2);");
+    
+    sqlite3_close(db);
+
+    
+}
+
+void checkpoint_only_test(){
+    sqlite3* db;
+    sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
+    
+    sql_execute(db, "pragma wal_checkpoint(restart);");
+    
+}
+
 #define nil NULL
 int main(){
     
-    sqlite3* db;
-    sqlite3* db2;
     
 
     change_directory_to_source_folder();
     sqlite3_config(SQLITE_CONFIG_LOG,sql_log);
     
  
-    read_both(db);
+//    checkpoint_only_test();
+    checkpoint_transaction_test();
+//    checkpoint_test();
+//    read_both(db);
 //    read(db);
 //    transaction(db,db2);
     
