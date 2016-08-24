@@ -36,12 +36,12 @@ int main(){
 
     rc = sqlite3_open_v2("test1-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
 
-    check();
+    check(db, rc);
 
-    sql_execute(db,"attach database 'test2-wal.db' as t2");
+    sql_execute(db,"attach database 'test2-wal.db' as t2", 0);
 
-    sql_execute(db,"delete from tb1");
-    sql_execute(db,"delete from t2.tb2");
+    sql_execute(db,"delete from tb1", 0);
+    sql_execute(db,"delete from t2.tb2", 0);
 
     //insert data and save sum of first column
     int insert_data;
@@ -59,22 +59,22 @@ int main(){
     for(i = 0; i < 200; i++){
         update_row = rand() % 1000;
         update_value = 1;
-        sql_execute(db,"begin transaction");
+        sql_execute(db,"begin transaction", 0);
 
         for(j = 0; j < 5; j++){
             sql_update(db, "tb1", update_row, update_value);
 
-            // if(rand() % 100 < 5){
-            //     printf("%d %d\n", i, j);
-            //     exit(-1);
+            if(rand() % 100 < 5){
+              printf("%d %d\n", i, j);
+              exit(-1);
             //     // sqlite3_interrupt(db);
             //     // continue;
-            // }
+            }
 
             sql_update(db, "t2.tb2", update_row, update_value * -1);
         }
 
-        sql_execute(db,"commit transaction");
+        sql_execute(db,"commit transaction", 0);
     }
 
     sqlite3_exec(db, "select SUM(b) as sum_b from tb1", callback_sum, &after, nil);

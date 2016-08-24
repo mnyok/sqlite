@@ -2452,9 +2452,10 @@ static int pager_playback_one_page(
 ** the entire contents of the master journal file. This could be
 ** a couple of kilobytes or so - potentially larger than the page
 ** size.
+**
+** TODO: Surplus pWal parameter
 */
 static int pager_delmaster(sqlite3_vfs *pVfs, Wal *pWal, const char *zMaster){
-  // sqlite3_vfs *pVfs = pPager->pVfs;
   int rc;                   /* Return code */
   sqlite3_file *pMaster;    /* Malloc'd master-journal file descriptor */
   sqlite3_file *pJournal;   /* Malloc'd child-journal file descriptor */
@@ -2506,37 +2507,37 @@ static int pager_delmaster(sqlite3_vfs *pVfs, Wal *pWal, const char *zMaster){
     if( rc!=SQLITE_OK ){
       goto delmaster_out;
     }
-
-    
-
     if( exists ){
-        /* One of the journals pointed to by the master journal exists.
-        ** Open it and check if it points at the master journal. If
-        ** so, return without deleting the master journal file.
-        */
-        int c;
-        int flags = 0;
-          
-      
-        if((9 <= nJournal)
-         && (0 == memcmp(&zJournal[nJournal-9],"-mj-store",9))){
-            
-            rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, &c);
-            if( rc!=SQLITE_OK ){
-                goto delmaster_out;
-            }
+      /* One of the journals pointed to by the master journal exists.
+      ** Open it and check if it points at the master journal. If
+      ** so, return without deleting the master journal file.
+      **
+      ** If the last 9 characters of journal name is "-mj-store",
+      ** current journal mode is wal.
+      */
+      int c;
 
-            rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr);
-        }else{
-            
-            flags = (SQLITE_OPEN_READONLY | SQLITE_OPEN_MAIN_JOURNAL);
-            rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, &c);
-            if( rc!=SQLITE_OK ){
-                goto delmaster_out;
-            }
-            
-          rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+      if( (9 <= nJournal)
+       && (0 == memcmp(&zJournal[nJournal-9], "-mj-store", 9))
+      ){
+        /* In wal journal mode */
+        rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, 0);
+        if( rc!=SQLITE_OK ){
+          goto delmaster_out;
         }
+
+        rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+
+      }else{
+        /* In non-wal journal mode */
+        int flags = (SQLITE_OPEN_READONLY|SQLITE_OPEN_MAIN_JOURNAL);
+        rc = sqlite3OsOpen(pVfs, zJournal, pJournal, flags, 0);
+        if( rc!=SQLITE_OK ){
+          goto delmaster_out;
+        }
+
+        rc = readMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+      }
 
       sqlite3OsClose(pJournal);
       if( rc!=SQLITE_OK ){
@@ -2762,7 +2763,11 @@ static int pager_playback(Pager *pPager, int isHot){
   ** for pageSize.
   */
   zMaster = pPager->pTmpSpace;
-  rc = readMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+  if( pagerUseWal(pPager) ){
+    rc = sqlite3WalReadMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+  } else {
+    rc = readMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+  }
   if( rc==SQLITE_OK && zMaster[0] ){
     rc = sqlite3OsAccess(pVfs, zMaster, SQLITE_ACCESS_EXISTS, &res);
   }
@@ -2893,7 +2898,11 @@ end_playback:
 
   if( rc==SQLITE_OK ){
     zMaster = pPager->pTmpSpace;
-    rc = readMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+    if( pagerUseWal(pPager) ){
+      rc = sqlite3WalReadMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+    } else {
+      rc = readMasterJournal(pPager->jfd, zMaster, pPager->pVfs->mxPathname+1);
+    }
     testcase( rc!=SQLITE_OK );
   }
   if( rc==SQLITE_OK

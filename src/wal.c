@@ -1232,9 +1232,9 @@ error:
 */
 int walMxFrameFromMasterStore(
   Wal *pWal,
-  u32* mxFrameToRecover,
-  int* shouldRollback,
-  char** zMasterJournalName
+  u32 *mxFrameToRecover,
+  int *shouldRollback,
+  char **zMasterJournalName
 ){
   int rc = SQLITE_OK;
   sqlite3_file* pMasterStore = 0;
@@ -1296,7 +1296,7 @@ finish:
   return rc;
 
 should_not_rollback:
-  if( zMasterJournalName ){
+  if( *zMasterJournalName ){
     sqlite3_free(*zMasterJournalName);
     *zMasterJournalName = 0;
   }
@@ -2360,8 +2360,11 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
           /* If the wal-index header is still malformed even while holding
           ** a WRITE lock, it can only mean that the header is corrupted and
           ** needs to be reconstructed.  So run recovery to do exactly that.
+          **
+          ** If the shouldRollback is true(Master journal exist), reconstruct
+          ** index
           */
-          rc = walIndexRecover(pWal,shouldRollback,mxFrameToRecover,&iOffset);
+          rc = walIndexRecover(pWal, shouldRollback, mxFrameToRecover, &iOffset);
 
           if( rc!=SQLITE_OK ){
             goto rollback_out;
