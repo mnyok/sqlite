@@ -1,3 +1,12 @@
+fuzzcheck
+sqldiff
+sqlite3_analyzer
+sqlite3_analyzer.c
+srcck1
+test-out.txt
+testfixture
+testdir/*
+test-out.text
 *.db-mj*
 *.db-shm*
 *.db-wal
