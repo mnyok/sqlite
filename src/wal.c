@@ -1230,80 +1230,84 @@ error:
 ** Read mxFrame value from master journal store file. Similar to walReadMasterJournal
 ** but it checks that master journal file exist or not.
 */
-int walMxFrameFromMasterStore(Wal *pWal, u32* mxFrameToRecover, int* shouldRollback, char** zMasterJournalName){
+int walMxFrameFromMasterStore(
+  Wal *pWal,
+  u32* mxFrameToRecover,
+  int* shouldRollback,
+  char** zMasterJournalName
+){
+  int rc = SQLITE_OK;
+  sqlite3_file* pMasterStore = 0;
+  int res = 0;
+  u32 storedMxFrame = UINT32_MAX;
+  i64 nMasterJournalName = 0;
 
-    int rc = SQLITE_OK;
-    sqlite3_file* pMasterStore = 0;
-    int res = 0;
-    u32 storedMxFrame = UINT32_MAX;
-    i64 nMasterJournalName = 0;
+  /*
+  ** Check the wal master store file exist in path. Rollback database only when
+  ** error doesn't occur and mj-store file exist.
+  */
+  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
 
-    /*
-    ** Check the wal master store file exist in path. Rollback database only when
-    ** error doesn't occur and mj-store file exist.
-    */
-    rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
+  if( rc!=SQLITE_OK || !res ){
+    goto should_not_rollback;
+  }
+
+  /* Open master store file. If error occurs, rollback should not proceed */
+  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pMasterStore,SQLITE_OPEN_READONLY|SQLITE_OPEN_EXCLUSIVE, 0);
+
+  if( rc != SQLITE_OK ){
+    goto should_not_rollback;
+  }
+
+
+  /*
+  ** Read mxFrame value and master journal name from master store file.
+  ** If master journal doesn't exist(means that this journal isn't hot) or 
+  ** error occurs, rollback will not be proceeded.
+  */
+  nMasterJournalName = pWal->pVfs->mxPathname;
+  *zMasterJournalName = sqlite3MallocZero(nMasterJournalName);
     
-    if( rc!=SQLITE_OK || !res ){
-        goto should_not_rollback;
-    }
-    
-    /* Open master store file. If error occurs, rollback should not proceed */
-    rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pMasterStore,SQLITE_OPEN_READONLY|SQLITE_OPEN_EXCLUSIVE, 0);
+  if( *zMasterJournalName == 0 ){
+    rc = SQLITE_NOMEM_BKPT;
+    goto should_not_rollback;
+  }
 
-    if( rc != SQLITE_OK ){
-        goto should_not_rollback;
-    }
+  rc = walReadMasterJournal(pMasterStore, *zMasterJournalName, nMasterJournalName, &storedMxFrame);
 
+  if( rc!=SQLITE_OK ){
+    goto should_not_rollback;
+  }
 
-    /*
-    ** Read mxFrame value and master journal name from master store file.
-    ** If master journal doesn't exist(means that this journal isn't hot) or 
-    ** error occurs, rollback will not be proceeded.
-    */
-    nMasterJournalName = pWal->pVfs->mxPathname;
-    *zMasterJournalName = sqlite3MallocZero(nMasterJournalName);
-    
-    if( *zMasterJournalName == 0 ){
-        rc = SQLITE_NOMEM_BKPT;
-        goto should_not_rollback;
-    }
-    
-    rc = walReadMasterJournal(pMasterStore, *zMasterJournalName, nMasterJournalName, &storedMxFrame);
-    
-    if( rc!=SQLITE_OK ){
-        goto should_not_rollback;
-    }
+  rc = sqlite3OsAccess(pWal->pVfs, *zMasterJournalName, SQLITE_ACCESS_EXISTS, &res);
 
-    rc = sqlite3OsAccess(pWal->pVfs, *zMasterJournalName, SQLITE_ACCESS_EXISTS, &res);
-
-    if( rc!=SQLITE_OK || !res ){
-        goto should_not_rollback;
-    }
+  if( rc!=SQLITE_OK || !res ){
+    goto should_not_rollback;
+  }
 
 
 finish:
-    *shouldRollback = 1;
-    *mxFrameToRecover = storedMxFrame;
-    
-    if( pMasterStore ){
-        sqlite3OsCloseFree(pMasterStore);
-    }
-    return rc;
+  *shouldRollback = 1;
+  *mxFrameToRecover = storedMxFrame;
+
+  if( pMasterStore ){
+    sqlite3OsCloseFree(pMasterStore);
+  }
+  return rc;
 
 should_not_rollback:
-    if( zMasterJournalName ){
-        sqlite3_free(*zMasterJournalName);
-        *zMasterJournalName = 0;
-    }
-    
-    *shouldRollback = 0;
-    *mxFrameToRecover = UINT32_MAX;
-    
-    if( pMasterStore ){
-        sqlite3OsCloseFree(pMasterStore);
-    }
-    return rc;
+  if( zMasterJournalName ){
+    sqlite3_free(*zMasterJournalName);
+    *zMasterJournalName = 0;
+  }
+
+  *shouldRollback = 0;
+  *mxFrameToRecover = UINT32_MAX;
+
+  if( pMasterStore ){
+    sqlite3OsCloseFree(pMasterStore);
+  }
+  return rc;
 
 }
 
