@@ -7,10 +7,6 @@ test-out.txt
 testfixture
 testdir/
 test-out.text
-*.db-mj*
-*.db-shm*
-*.db-wal
-*.db-journal
 *.xcuserstate
 .libs/
 .target_source
@@ -58,8 +54,9 @@ tsrc/
 cscope*
 *.db
 *.db-wal
-*.db-mj-store
 *.db-mj*
+*.db-shm*
+*.db-journal
 *.xcbkptlist
 *.o
 *.dSYM
