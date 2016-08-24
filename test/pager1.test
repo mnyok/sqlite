@@ -614,7 +614,7 @@ foreach {tn1 tcl} {
       PRAGMA aux.synchronous=NORMAL;
       PRAGMA main.journal_mode=DELETE;
       PRAGMA aux.journal_mode=WAL;
-    } 0
+    } 1
     o1a { 
       PRAGMA main.synchronous=FULL;
       PRAGMA aux.synchronous=OFF;

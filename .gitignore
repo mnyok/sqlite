@@ -5,7 +5,7 @@ sqlite3_analyzer.c
 srcck1
 test-out.txt
 testfixture
-testdir/*
+testdir/
 test-out.text
 *.db-mj*
 *.db-shm*
@@ -56,3 +56,9 @@ tsrc/
 .DS_Store
 *.out
 cscope*
+.db
+.db-wal
+.db-mj-store
+.db-mj*
+.xcbkptlist
+

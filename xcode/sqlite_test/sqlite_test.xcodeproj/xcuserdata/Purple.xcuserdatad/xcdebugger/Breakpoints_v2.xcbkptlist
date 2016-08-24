@@ -110,7 +110,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2426"
-            endingLineNumber = "2426">
+            endingLineNumber = "2426"
+            landmarkName = "walIndexReadHdr()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -156,7 +158,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "3113"
-            endingLineNumber = "3113">
+            endingLineNumber = "3113"
+            landmarkName = "walRestartLog()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -171,7 +175,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "3172"
             endingLineNumber = "3172"
-            landmarkName = "walWriteOneFrame()"
+            landmarkName = "walWriteToLog()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -187,7 +191,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "3248"
             endingLineNumber = "3248"
-            landmarkName = "sqlite3WalFrames()"
+            landmarkName = "walRewriteChecksums()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -218,7 +222,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2340"
-            endingLineNumber = "2340">
+            endingLineNumber = "2340"
+            landmarkName = "walIndexReadHdr()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -248,7 +254,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "3233"
-            endingLineNumber = "3233">
+            endingLineNumber = "3233"
+            landmarkName = "walRewriteChecksums()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -342,7 +350,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2877"
-            endingLineNumber = "2877">
+            endingLineNumber = "2877"
+            landmarkName = "sqlite3WalFindFrame()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -356,9 +366,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2481"
-            endingLineNumber = "2481"
-            landmarkName = "walTryBeginRead()"
-            landmarkType = "7">
+            endingLineNumber = "2481">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -421,7 +429,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1232"
             endingLineNumber = "1232"
-            landmarkName = "walMxFrameFromMasterStore()"
+            landmarkName = "walReadMasterJournal()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -517,7 +525,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "3076"
             endingLineNumber = "3076"
-            landmarkName = "walRestartLog()"
+            landmarkName = "sqlite3WalSavepointUndo()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -598,6 +606,118 @@
             startingLineNumber = "182"
             endingLineNumber = "182"
             landmarkName = "checkpoint_only_test()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200536.053515"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "2364"
+            endingLineNumber = "2364"
+            landmarkName = "walIndexReadHdr()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200576.704588"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "2403"
+            endingLineNumber = "2403"
+            landmarkName = "walIndexReadHdr()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200579.329995"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "2410"
+            endingLineNumber = "2410"
+            landmarkName = "walIndexReadHdr()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200600.112042"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1252"
+            endingLineNumber = "1252"
+            landmarkName = "walMxFrameFromMasterStore()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200617.400077"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1191"
+            endingLineNumber = "1191"
+            landmarkName = "walReadMasterJournal()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493200636.233323"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1211"
+            endingLineNumber = "1211"
+            landmarkName = "walReadMasterJournal()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../splited/sqlite3-10.c"
+            timestampString = "493202863.460284"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1126"
+            endingLineNumber = "1126"
+            landmarkName = "writeWalMasterStoreFile()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
