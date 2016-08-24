@@ -56,9 +56,10 @@ tsrc/
 .DS_Store
 *.out
 cscope*
-.db
-.db-wal
-.db-mj-store
-.db-mj*
-.xcbkptlist
-
+*.db
+*.db-wal
+*.db-mj-store
+*.db-mj*
+*.xcbkptlist
+*.o
+*.dSYM
