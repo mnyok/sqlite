@@ -1178,7 +1178,7 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
   u32 nMasterJournalName = 0;
   u32 chksum = 0;
   u8 *aMagic[8];
-  u32 storedMxFrame = UINT32_MAX;
+  u32 storedMxFrame = SQLITE_MAX_U32;
   int i;
 
   /*
@@ -1240,7 +1240,7 @@ int walMxFrameFromMasterStore(
   int rc = SQLITE_OK;
   sqlite3_file *pMasterStore = 0;
   int res = 0;
-  u32 storedMxFrame = UINT32_MAX;
+  u32 storedMxFrame = SQLITE_MAX_U32;
   i64 nMasterJournalName = 0;
 
   /*
@@ -1303,7 +1303,7 @@ should_not_rollback:
   }
 
   *shouldRollback = 0;
-  *mxFrameToRecover = UINT32_MAX;
+  *mxFrameToRecover = SQLITE_MAX_U32;
 
   if( pMasterStore ){
     sqlite3OsCloseFree(pMasterStore);
@@ -1434,7 +1434,7 @@ static int walIndexRecover(
       iFrame++;
 
       /* 
-      ** If mj-store is not found or not hot, mxFrameToRecover is UINT32_MAX
+      ** If mj-store is not found or not hot, mxFrameToRecover is SQLITE_MAX_U32
       ** that no frame is ignored.
       */
       if( shouldRollback && (iFrame > mxFrameToRecover) ) break;
@@ -2319,7 +2319,7 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
   volatile u32 *page0;            /* Chunk of wal-index containing header */
   char *zMasterJournalName = 0;   /* Name of master journal file */
   i64 iOffset = 0;
-  u32 mxFrameToRecover = UINT32_MAX; /* mxFrame From master store file */
+  u32 mxFrameToRecover = SQLITE_MAX_U32; /* mxFrame From master store file */
   int shouldRollback = 0;
 
   /* Ensure that page 0 of the wal-index (the page that contains the

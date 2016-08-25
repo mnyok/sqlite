@@ -141,7 +141,8 @@ void checkpoint_transaction_test(){
     sql_execute(db,"pragma wal_checkpoint(full)");
     
 //    sql_execute(db,"insert into t1 values (1,2,3)");
-    
+  
+  for(int j = 0 ; j < 100 ; j ++){
     sql_execute(db,"begin");
     
     for(int i = 0 ; i < 10 ; i ++){
@@ -150,8 +151,8 @@ void checkpoint_transaction_test(){
         sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
     }
     sql_execute(db,"commit");
-    
-    
+  }
+  
     sqlite3_close(db);
 }
 
@@ -195,10 +196,10 @@ int main(){
 //    checkpoint_only_test();
 //    checkpoint_transaction_test();
 //    checkpoint_test();
-    read_both();
+//    read_both();
 //    read();
-//    transaction(db,db2);
-    
+    transaction();
+  
     
     
     
