@@ -2321,7 +2321,7 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
       Btree *pBt = db->aDb[i].pBt;
       if( sqlite3BtreeIsInTrans(pBt) ){
 
-        Pager* pPager;
+        Pager *pPager;
         char const *zFile = 0;
 
         sqlite3BtreeEnter(pBt);
@@ -2341,7 +2341,6 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
         assert( zFile[0]!=0 );
         rc = sqlite3OsWrite(pMaster, zFile, sqlite3Strlen30(zFile)+1, offset);
         offset += sqlite3Strlen30(zFile)+1;
-
         if( rc!=SQLITE_OK ){
           sqlite3OsCloseFree(pMaster);
           sqlite3OsDelete(pVfs, zMaster, 0);
@@ -2362,7 +2361,6 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
       sqlite3DbFree(db, zMaster);
       return rc;
     }
-
 
     /* Sync all the db files involved in the transaction. The same call
     ** sets the master journal pointer in each individual journal. If
@@ -2397,28 +2395,24 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
     if( rc ){
       return rc;
     }
-    
-    /*
-    Delete the wal master store file.
-    */
 
+    /* Delete the wal master store file. */
     for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
         Btree *pBt = db->aDb[i].pBt;
-        Pager* pPager;
+        Pager *pPager;
 
-        if( pBt){
+        if( pBt ){
             pPager = sqlite3BtreePager(pBt);
-            if(pagerUseWal(pPager)){
+            if( pagerUseWal(pPager) ){
 
-                rc = sqlite3OsDelete(pPager->pVfs,pPager->pWal->zWalMasterStore,0);
+                rc = sqlite3OsDelete(pPager->pVfs, pPager->pWal->zWalMasterStore, 0);
 
-                if(rc!=SQLITE_OK){
+                if( rc!=SQLITE_OK ){
                     return rc;
                 }
             }
         }
     }
-
 
     /* All files and directories have already been synced, so the following
     ** calls to sqlite3BtreeCommitPhaseTwo() are only closing files and

@@ -3110,7 +3110,7 @@ static int pagerWalFrames(
   Pager *pPager,                  /* Pager object */
   PgHdr *pList,                   /* List of frames to log */
   Pgno nTruncate,                 /* Database size after this commit */
-  int isCommit,                    /* True if this is a commit */
+  int isCommit,                   /* True if this is a commit */
   const char* zMaster
 ){
   int rc;                         /* Return code */
@@ -4689,6 +4689,9 @@ int sqlite3PagerOpen(
   **     Main journal file handle        (journalFileSize bytes)
   **     Database file name              (nPathname+1 bytes)
   **     Journal file name               (nPathname+8+1 bytes)
+  **
+  **     Wal journal file name           (nPathname+4+2 bytes)
+  **     Wal master store file name      (nPathname+9+2 bytes)
   */
   pPtr = (u8 *)sqlite3MallocZero(
     ROUND8(sizeof(*pPager)) +      /* Pager structure */
@@ -4731,9 +4734,9 @@ int sqlite3PagerOpen(
     sqlite3FileSuffix3(pPager->zFilename, pPager->zWal);
 
     pPager->zWalMasterStore = &pPager->zWal[nPathname+4+1];
-    memcpy(pPager->zWalMasterStore,zPathname,nPathname);
-    memcpy(&pPager->zWalMasterStore[nPathname],"-mj-store\000",9+1);
-    sqlite3FileSuffix3(pPager->zFilename,pPager->zMasterStore);
+    memcpy(pPager->zWalMasterStore, zPathname, nPathname);
+    memcpy(&pPager->zWalMasterStore[nPathname], "-mj-store\000", 9+1);
+    sqlite3FileSuffix3(pPager->zFilename, pPager->zMasterStore);
 #endif
     sqlite3DbFree(0, zPathname);
   }
@@ -6227,7 +6230,7 @@ int sqlite3PagerCommitPhaseOne(
   int noSync                      /* True to omit the xSync on the db file */
 ){
   int rc = SQLITE_OK;             /* Return code */
-    
+
   assert( pPager->eState==PAGER_WRITER_LOCKED
        || pPager->eState==PAGER_WRITER_CACHEMOD
        || pPager->eState==PAGER_WRITER_DBMOD
@@ -6256,7 +6259,6 @@ int sqlite3PagerCommitPhaseOne(
     sqlite3BackupRestart(pPager->pBackup);
   }else{
     if( pagerUseWal(pPager) ){
-        
       PgHdr *pList = sqlite3PcacheDirtyList(pPager->pPCache);
       PgHdr *pPageOne = 0;
       if( pList==0 ){
@@ -6788,13 +6790,13 @@ sqlite3_file *sqlite3PagerJrnlFile(Pager *pPager){
 ** Return the full pathname of the master store file.
 */
 const char *sqlite3PagerWalMasterStorename(Pager *pPager){
-    return pPager->zWalMasterStore;
+  return pPager->zWalMasterStore;
 }
 /*
 ** Return the full pathname of the journal file.
 */
 const char *sqlite3PagerJournalname(Pager *pPager){
-    return pPager->zJournal;
+  return pPager->zJournal;
 }
 
 #ifdef SQLITE_HAS_CODEC
