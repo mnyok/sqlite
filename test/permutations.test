@@ -174,9 +174,9 @@ test_suite "extraquick" -prefix "" -description {
   slower tests are omitted.
 } -files [
   test_set $allquicktests -exclude *malloc* *ioerr* *fault* *bigfile* *_err* \
-     wal3.test fts4merge* sort2.test mmap1.test walcrash* \
+     wal3.test fts4merge* sort2.test mmap1.test \
      percentile.test where8m.test walcksum.test savepoint3.test \
-     fuzzer1.test fuzzer3.test fts3expr3.test
+     fuzzer1.test fuzzer3.test fts3expr3.test -include walcrash.test
 ]
 
 test_suite "mmap" -prefix "mm-" -description {

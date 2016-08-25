@@ -33,7 +33,7 @@ db close
 
 set seed 0
 set REPEATS 100
-
+# 
 # walcrash-1.*
 #
 for {set i 1} {$i < $REPEATS} {incr i} {
@@ -124,8 +124,6 @@ for {set i 1} {$i < $REPEATS} {incr i} {
       PRAGMA WAL_CHECKPOINT(FULL);
   }
   
-  #db close
-  
   do_test walcrash-3.$i.1 {
     crashsql -delay 2 -file test2.db-wal -seed [incr seed] {
       ATTACH 'test2.db' AS aux;
@@ -135,6 +133,18 @@ for {set i 1} {$i < $REPEATS} {incr i} {
         
         INSERT INTO t1 VALUES(2, 2);
         INSERT INTO t2 VALUES(2, 2);
+        
+        INSERT INTO t1 VALUES(3, 2);
+        INSERT INTO t2 VALUES(3, 2);
+        
+        INSERT INTO t1 VALUES(4, 2);
+        INSERT INTO t2 VALUES(4, 2);
+        
+        INSERT INTO t1 VALUES(5, 2);
+        INSERT INTO t2 VALUES(5, 2);
+        
+        INSERT INTO t1 VALUES(6, 2);
+        INSERT INTO t2 VALUES(6, 2);
       COMMIT;
     }
   } {1 {child process exited abnormally}}

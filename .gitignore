@@ -60,3 +60,5 @@ cscope*
 *.xcbkptlist
 *.o
 *.dSYM
+test-out.txt
+
