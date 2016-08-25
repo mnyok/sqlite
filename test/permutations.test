@@ -168,6 +168,12 @@ test_suite "veryquick" -prefix "" -description {
       *fts5corrupt* *fts5big* *fts5aj*
 ]
 
+test_suite "pager1" -prefix "" -description {
+    run pager1.test
+} -files [
+    test_set pager1.test
+]
+
 test_suite "extraquick" -prefix "" -description {
   "Extra" quick test suite. Runs in a few minutes on a workstation.
   This test suite is the same as the "veryquick" tests, except that

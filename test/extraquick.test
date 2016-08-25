@@ -11,7 +11,7 @@
 set testdir [file dirname $argv0]
 source $testdir/permutations.test
 
-#run_test_suite walcrash
-run_test_suite extraquick
+run_test_suite pager1
+#run_test_suite extraquick
 
 finish_test
