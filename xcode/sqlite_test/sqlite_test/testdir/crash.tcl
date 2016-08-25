@@ -15,6 +15,18 @@ db eval {
         
         INSERT INTO t1 VALUES(2, 2);
         INSERT INTO t2 VALUES(2, 2);
+        
+        INSERT INTO t1 VALUES(3, 2);
+        INSERT INTO t2 VALUES(3, 2);
+        
+        INSERT INTO t1 VALUES(4, 2);
+        INSERT INTO t2 VALUES(4, 2);
+        
+        INSERT INTO t1 VALUES(5, 2);
+        INSERT INTO t2 VALUES(5, 2);
+        
+        INSERT INTO t1 VALUES(6, 2);
+        INSERT INTO t2 VALUES(6, 2);
       COMMIT;
     
 }

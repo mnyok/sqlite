@@ -150,7 +150,7 @@ int sqlite3WalMxFrame(Wal *pWal);
 
 int sqlite3WalReadMasterJournal(sqlite3_file *pWalMasterStore, char *zMasterPtr, u32 nMasterPtr);
 
-int writeWalMasterStoreFile(Pager *pPager, const char *zMaster, const char *zMasterStore);
+int writeWalMasterStoreFile(Wal *pWal, const char *zMaster);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */
