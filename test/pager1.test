@@ -531,7 +531,8 @@ tv script copy_on_mj_delete
 set ::mj_filename_length 0
 set ::mj_delete_cnt 0
 proc copy_on_mj_delete {method filename args} {
-  if {[string match *mj* [file tail $filename]]} { 
+  if {[string match *mj* [file tail $filename]]
+      && ![string match *mj-store [file tail $filename]]} {
     #
     # NOTE: Is the file name relative?  If so, add the length of the current
     #       directory.
