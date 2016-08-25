@@ -9,7 +9,6 @@
 #include "../common/common.c"
 
 
-<<<<<<< HEAD:ms_test/main.c
 <<<<<<< HEAD
 #define SRC_PATH  "/Users/Purple/Dropbox/ug/sqlite/xcode/sqlite_test/sqlite_test"
 
@@ -74,21 +73,10 @@ int sql_update_rand(sqlite3* db, const char * table){
     check();
 
     return rc;
-=======
-/* Handle callback from sql
-** argc : number of data
-** argv : data
-** colName : name of data column
-*/
-static int callback_sum(void* sum, int argc, char** argv, char** colName)
-{
-    *(int*)sum += atoi(argv[0]);
-	return 0;
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
 }
 
+void change_directory_to_source_folder(){
 
-<<<<<<< HEAD:ms_test/main.c
     chdir(SRC_PATH);
 }
 =======
@@ -105,13 +93,12 @@ static int callback_sum(void* sum, int argc, char** argv, char** colName)
 
 >>>>>>> 2a2f2dd... cherrypick common files
 
-=======
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
 int main(){
+
+    // change_directory_to_source_folder();
+
     int rc;
     int i;
-    int before = 0;
-    int after = 0;
 
     srand((unsigned)time(NULL) + (unsigned)getpid());
 
@@ -120,7 +107,6 @@ int main(){
 
     check();
 
-<<<<<<< HEAD:ms_test/main.c
 <<<<<<< HEAD
 
     sql(db,"attach database 'test2-wal.db' as t2");
@@ -130,17 +116,8 @@ int main(){
     sql_execute(db,"delete from tb1");
     sql_execute(db,"delete from t2.tb2");
 >>>>>>> 2a2f2dd... cherrypick common files
-=======
-    sql_execute(db,"attach database 'test2-wal.db' as t2");
 
-    sql_execute(db,"delete from tb1");
-    sql_execute(db,"delete from t2.tb2");
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
-
-    //insert data and save sum of first column
-    int insert_data;
     for(i = 0; i < 1000; i++){
-<<<<<<< HEAD:ms_test/main.c
 <<<<<<< HEAD
         sql(db,"begin transaction");
 
@@ -154,8 +131,6 @@ int main(){
         sql_insert_rand(db, "t2.tb2");
         sql_insert_rand(db, "t2.tb2");
 =======
-=======
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
         insert_data = rand() % 100;
         before += insert_data * 2;
         sql_insert(db, "tb1", i, insert_data, insert_data);
@@ -183,7 +158,6 @@ int main(){
 
             sql_update(db, "t2.tb2", update_row, update_value * -1);
         }
-<<<<<<< HEAD:ms_test/main.c
 
         sql_execute(db,"commit transaction");
     }
@@ -193,27 +167,16 @@ int main(){
 
 <<<<<<< HEAD
         // exit(-1);
-=======
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
 
-        sql_execute(db,"commit transaction");
+    sql(db,"commit transaction");
     }
 
-<<<<<<< HEAD:ms_test/main.c
     sql(db,"delete from tb1");
     sql(db,"delete from t2.tb2");
 =======
     // sql_execute(db,"delete from tb1");
     // sql_execute(db,"delete from t2.tb2");
 >>>>>>> 2a2f2dd... cherrypick common files
-=======
-    sqlite3_exec(db, "select SUM(b) as sum_b from tb1", callback_sum, &after, nil);
-    sqlite3_exec(db, "select SUM(b) as sum_b from t2.tb2", callback_sum, &after, nil);
-    printf("After sum = %d\n", after);
-
-    // sql_execute(db,"delete from tb1");
-    // sql_execute(db,"delete from t2.tb2");
->>>>>>> 3fd02fbe8ac3d421bdd94658831331c0abbd3697:wal_test/main.c
 
     sqlite3_close(db);
     return 0;
