@@ -50,6 +50,7 @@ tclsqlite.lo
 tclsqlite.o
 tsrc/
 .DS_Store
+crash.tcl
 *.out
 cscope*
 *.db
