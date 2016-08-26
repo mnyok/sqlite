@@ -1073,23 +1073,24 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
   return rc;
 }
 
-int walOpenMasterStoreFile(Wal* pWal){
+int walOpenMasterStoreFile(Wal *pWal){
   int rc = SQLITE_OK;
-  
-  if(pWal->pWalMasterStoreFd){ //if already open, just return OK.
+  sqlite3_file *pWalMasterStore = 0;
+
+  /* if already open, just return OK. */
+  if( pWal->pWalMasterStoreFd ){
     return rc;
   }
   
-  sqlite3_file* pWalMasterStore = 0;
+  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, 0);
   
-  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
-  
-  if(rc==SQLITE_OK){
+  if( rc==SQLITE_OK ){
     pWal->pWalMasterStoreFd = pWalMasterStore;
   }
   return rc;
   
 }
+
 /*
 ** Write the supplied master journal name into the master journal store file
 ** for pager pPager at the current location. The format is:
