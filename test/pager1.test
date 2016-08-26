@@ -608,7 +608,8 @@ foreach {tn1 tcl} {
     w1 { 
       PRAGMA main.synchronous=NORMAL;
       PRAGMA aux.synchronous=NORMAL;
-      PRAGMA journal_mode = WAL;
+      PRAGMA main.journal_mode = WAL;
+      PRAGMA aux.journal_mode = WAL;
     } 1
     w2 { 
       PRAGMA main.synchronous=NORMAL;
