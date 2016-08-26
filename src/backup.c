@@ -558,6 +558,7 @@ int sqlite3_backup_step(sqlite3_backup *p, int nPage){
           sqlite3PagerTruncateImage(pDestPager, nDestTruncate);
           rc = sqlite3PagerCommitPhaseOne(pDestPager, 0, 0);
         }
+        
         /* Finish committing the transaction to the destination database. */
         if( SQLITE_OK==rc
          && SQLITE_OK==(rc = sqlite3BtreeCommitPhaseTwo(p->pDest, 0))

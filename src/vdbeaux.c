@@ -2396,24 +2396,6 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
       return rc;
     }
 
-    // /* Delete the wal master store file. */
-    // for(i=0; rc==SQLITE_OK && i<db->nDb; i++){
-    //     Btree *pBt = db->aDb[i].pBt;
-    //     Pager *pPager;
-    // 
-    //     if( pBt ){
-    //         pPager = sqlite3BtreePager(pBt);
-    //         if( pagerUseWal(pPager) ){
-    // 
-    //             rc = sqlite3OsDelete(pPager->pVfs, pPager->pWal->zWalMasterStore, 0);
-    // 
-    //             if( rc!=SQLITE_OK ){
-    //                 return rc;
-    //             }
-    //         }
-    //     }
-    // }
-
     /* All files and directories have already been synced, so the following
     ** calls to sqlite3BtreeCommitPhaseTwo() are only closing files and
     ** deleting or truncating journals. If something goes wrong while
