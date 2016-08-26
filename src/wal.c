@@ -1073,23 +1073,24 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
   return rc;
 }
 
-int walOpenMasterStoreFile(Wal* pWal){
+int walOpenMasterStoreFile(Wal *pWal){
   int rc = SQLITE_OK;
-  
-  if(pWal->pWalMasterStoreFd){ //if already open, just return OK.
+  sqlite3_file *pWalMasterStore = 0;
+
+  /* if already open, just return OK. */
+  if( pWal->pWalMasterStoreFd ){
     return rc;
   }
   
-  sqlite3_file* pWalMasterStore = 0;
+  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, 0);
   
-  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
-  
-  if(rc==SQLITE_OK){
+  if( rc==SQLITE_OK ){
     pWal->pWalMasterStoreFd = pWalMasterStore;
   }
   return rc;
   
 }
+
 /*
 ** Write the supplied master journal name into the master journal store file
 ** for pager pPager at the current location. The format is:
@@ -1277,7 +1278,7 @@ finish:
 ** but it checks that master journal file exist or not.
 */
 int walMxFrameFromMasterStore(
-  Wal* pWal,
+  Wal *pWal,
   u32 *mxFrameToRecover,
   int *shouldRollback,
   char **zMasterJournalName
@@ -1292,7 +1293,7 @@ int walMxFrameFromMasterStore(
   ** Check the wal master store file exist in path. Rollback database only when
   ** error doesn't occur and mj-store file exist.
   */
-  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS |SQLITE_ACCESS_READ, &res);
+  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
 
   if( rc!=SQLITE_OK || !res ){
     goto should_not_rollback;
@@ -1346,7 +1347,7 @@ finish:
   return rc;
 
 should_not_rollback:
-  
+
   if( *zMasterJournalName ){
     sqlite3_free(*zMasterJournalName);
     *zMasterJournalName = 0;
@@ -2442,9 +2443,9 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
             }
           }
 
-          /* Delete wal master file */
+          /* Delete wal master jounal file */
           if( zMasterJournalName ){
-            rc = pager_delmaster(pWal->pVfs, pWal, zMasterJournalName);
+            rc = pager_delmaster(pWal->pVfs, zMasterJournalName);
           }
 
         rollback_out:
@@ -3022,7 +3023,6 @@ int sqlite3WalBeginWriteTransaction(Wal *pWal){
 ** routine merely releases the lock.
 */
 int sqlite3WalEndWriteTransaction(Wal *pWal){
-    
   walZeroMasterStore(pWal);
   if( pWal->writeLock ){
     walUnlockExclusive(pWal, WAL_WRITE_LOCK, 1);

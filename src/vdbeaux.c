@@ -2328,9 +2328,9 @@ static int vdbeCommit(sqlite3 *db, Vdbe *p){
         pPager = sqlite3BtreePager(pBt);
 
         if(pagerUseWal(pPager)) {
-            zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
+          zFile = sqlite3BtreeGetWalMasterStoreName(pBt);
         }else{
-            zFile = sqlite3BtreeGetJournalname(pBt);
+          zFile = sqlite3BtreeGetJournalname(pBt);
         }
 
         sqlite3BtreeLeave(pBt);
