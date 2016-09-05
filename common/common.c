@@ -5,6 +5,26 @@
 #include "common.h"
 
 //  void (*xLog)(void*,int,const char*);
+//get current time
+double get_time_milisecond(void)
+{
+/*  long ms;
+  time_t s; //second
+  struct timespec spec;
+
+  clock_gettime(CLOCK_REALTIME, &spec);
+
+  s  = spec.tv_sec;
+  ms = round(spec.tv_nsec / 1.0e6);
+*/
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+
+  double time_in_mill = 
+           (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+
+  return (tv.tv_sec) * 1000 + (tv.tv_usec) / 1000 ;
+}
 
 void sql_log(void* data, int resultCode, const char* msg){
     
@@ -38,7 +58,7 @@ int sql_execute(sqlite3* db, const char * sql, boolean useCallback){
 
     int rc;
     
-    puts(sql);
+    //puts(sql);
     
 //    rc = sqlite3_exec(db, sql, useCallback ? sql_callback : nil, nil, nil);
 
