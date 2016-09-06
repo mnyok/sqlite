@@ -23,20 +23,13 @@ int main(){
 
     sqlite3* db;
 
-    rc = sqlite3_open_v2("test2-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
-    sqlite3_close(db);
-
     rc = sqlite3_open_v2("test1-wal.db",&db,SQLITE_OPEN_READWRITE,nil);
 
-    sql_execute(db,"attach database 'test2-wal.db' as t2", 0);
-
     sql_execute(db,"delete from tb1", 0);
-    sql_execute(db,"delete from t2.tb2", 0);
 
     sql_execute(db, "PRAGMA main.journal_mode = WAL", 0);
-    sql_execute(db, "PRAGMA t2.journal_mode = WAL", 0);
 
-    printf("Insert Test..\n");
+    printf("Single Database Insert Test..\n");
     time_start = get_time_milisecond();
     //insert data and save sum of first column
     int insert_data;
@@ -44,14 +37,13 @@ int main(){
         insert_data = rand() % 100;
         sql_execute(db, "begin transaction", 0);
         sql_insert(db, "tb1", i, insert_data, insert_data);
-        sql_insert(db, "t2.tb2", i, insert_data, insert_data);
         sql_execute(db, "commit transaction", 0);
     }
 
     printf("running time: %f\n", get_time_milisecond() - time_start);
 
     
-    printf("Update Test..\n");
+    printf("Single Database Update Test..\n");
     time_start = get_time_milisecond();
     //update
     int update_value;
@@ -64,7 +56,6 @@ int main(){
 
         for(j = 0; j < 5; j++){
             sql_update(db, "tb1", update_row, update_value);
-            sql_update(db, "t2.tb2", update_row, update_value * -1);
         }
 
         sql_execute(db,"commit transaction", 0);
