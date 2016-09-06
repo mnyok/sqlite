@@ -1,5 +1,5 @@
 #include <time.h>
-#include "../common/common.c"
+#include "../common/common.h"
 
 
 /* Handle callback from sql
@@ -36,7 +36,7 @@ int main(){
     sql_execute(db, "PRAGMA main.journal_mode = WAL", 0);
     sql_execute(db, "PRAGMA t2.journal_mode = WAL", 0);
 
-    printf("Insert Test..\n");
+    printf("Multi-database Insert Test..\n");
     time_start = get_time_milisecond();
     //insert data and save sum of first column
     int insert_data;
@@ -51,7 +51,7 @@ int main(){
     printf("running time: %f\n", get_time_milisecond() - time_start);
 
     
-    printf("Update Test..\n");
+    printf("Multi-database Update Test..\n");
     time_start = get_time_milisecond();
     //update
     int update_value;

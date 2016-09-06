@@ -1,5 +1,5 @@
 #include <time.h>
-#include "../common/common.c"
+#include "../common/common.h"
 
 
 /* Handle callback from sql
