@@ -261,11 +261,11 @@ int main(){
     //    checkpoint_only_test();
     //    checkpoint_transaction_test();
     //    checkpoint_test();
-        read_both();
+//        read_both();
 //    read();
 //    read_twice();
 //        read();
-//        transaction();
+        transaction();
   
     
     

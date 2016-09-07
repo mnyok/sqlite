@@ -1272,11 +1272,12 @@ finish:
   
   return rc;
 }
-int walCheckMasterStoreExistence(Wal *pWal, int* resOut){
+int walCheckMasterStoreExistenceAndOpenIfExists(Wal *pWal, int* resOut){
   
   int rc = SQLITE_OK;
   int res;
-  if(pWal->pWalMasterStoreFd &&isOpen(pWal->pWalMasterStoreFd)){
+  
+  if(pWal->pWalMasterStoreFd && isOpen(pWal->pWalMasterStoreFd)){
     *resOut = 1;
     return rc;
   }
@@ -1288,6 +1289,14 @@ int walCheckMasterStoreExistence(Wal *pWal, int* resOut){
     return rc;
   }
   
+  if(res){
+     rc = walOpenMasterStoreFile(pWal);
+     
+     if(rc!=SQLITE_OK){
+       return rc;
+     }
+   }
+
   *resOut = res;
   
   return rc;
@@ -1316,16 +1325,10 @@ int walMxFrameFromMasterStore(
   ** error doesn't occur and mj-store file exist.
   */
 
-  rc = walCheckMasterStoreExistence(pWal, &res);
-
+  rc = walCheckMasterStoreExistenceAndOpenIfExists(pWal, &res);
+ 
   if( rc!=SQLITE_OK || !res ){
     goto should_not_rollback;
-  }
- 
-  rc = walOpenMasterStoreFile(pWal);
-  
-  if(rc!=SQLITE_OK){
-    return rc;
   }
 
 
