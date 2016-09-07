@@ -1073,18 +1073,18 @@ static int walIndexAppend(Wal *pWal, u32 iFrame, u32 iPage){
   return rc;
 }
 
-int walOpenMasterStoreFile(Wal *pWal){
+int walOpenMasterStoreFile(Wal* pWal){
   int rc = SQLITE_OK;
-  sqlite3_file *pWalMasterStore = 0;
-
-  /* if already open, just return OK. */
-  if( pWal->pWalMasterStoreFd ){
+  
+  if(pWal->pWalMasterStoreFd && isOpen(pWal->pWalMasterStoreFd)){ //if already open, just return OK.
     return rc;
   }
   
-  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, 0);
+  sqlite3_file* pWalMasterStore = 0;
   
-  if( rc==SQLITE_OK ){
+  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pWalMasterStore, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, 0);
+  
+  if(rc==SQLITE_OK){
     pWal->pWalMasterStoreFd = pWalMasterStore;
   }
   return rc;
@@ -1170,7 +1170,7 @@ int writeWalMasterStoreFile(Wal* pWal, const char *zMaster){
 
 /*
 ** This function attempts to read a master journal file name and mxFrame value
-** from the master journal store(mj-store) file.
+** from the master journal store(mj-stored) file.
 **
 ** See comments above writeWalMasterStoreFile() for the format used to
 ** store a master journal file name at master journal store file.
@@ -1272,6 +1272,36 @@ finish:
   
   return rc;
 }
+int walCheckMasterStoreExistenceAndOpenIfExists(Wal *pWal, int* resOut){
+  
+  int rc = SQLITE_OK;
+  int res;
+  
+  if(pWal->pWalMasterStoreFd && isOpen(pWal->pWalMasterStoreFd)){
+    *resOut = 1;
+    return rc;
+  }
+
+  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS |SQLITE_ACCESS_READWRITE, &res);
+  
+  if(rc!=SQLITE_OK){
+    *resOut = 0;
+    return rc;
+  }
+  
+  if(res){
+     rc = walOpenMasterStoreFile(pWal);
+     
+     if(rc!=SQLITE_OK){
+       return rc;
+     }
+   }
+
+  *resOut = res;
+  
+  return rc;
+
+}
 
 /*
 ** Read mxFrame value from master journal store file. Similar to walReadMasterJournal
@@ -1289,27 +1319,16 @@ int walMxFrameFromMasterStore(
   u32 storedMxFrame = SQLITE_MAX_U32;
   i64 nMasterJournalName = 0;
   
+  
   /*
-  ** Check the wal master store file exist in path. Rollback database only when
-  ** error doesn't occur and mj-store file exist.
+  ** Check the wal master store file exist in path Rollback   database only when
+  ** error doesn't occur and mj-stored file exist.
   */
-  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS|SQLITE_ACCESS_READ, &res);
 
+  rc = walCheckMasterStoreExistenceAndOpenIfExists(pWal, &res);
+ 
   if( rc!=SQLITE_OK || !res ){
     goto should_not_rollback;
-  }
-
-//  /* Open master store file. If error occurs, rollback should not proceed */
-//  rc = sqlite3OsOpenMalloc(pWal->pVfs, pWal->zWalMasterStore, &pMasterStore,SQLITE_OPEN_READONLY|SQLITE_OPEN_EXCLUSIVE, 0);
-//
-//  if( rc != SQLITE_OK ){
-//    goto should_not_rollback;
-//  }
-  
-  rc = walOpenMasterStoreFile(pWal);
-  
-  if(rc!=SQLITE_OK){
-    return rc;
   }
 
 
@@ -1328,7 +1347,7 @@ int walMxFrameFromMasterStore(
 
   rc = walReadMasterJournal(pWal->pWalMasterStoreFd, *zMasterJournalName, nMasterJournalName, &storedMxFrame);
 
-  if( rc!=SQLITE_OK || (zMasterJournalName[0] == 0)){ //error occured on reading or mj-store is corrupted or magic number is zeroed out.
+  if( rc!=SQLITE_OK || (zMasterJournalName[0] == 0)){ //error occured on reading or mj-stored is corrupted or magic number is zeroed out.
     goto should_not_rollback;
   }
 
@@ -1482,7 +1501,7 @@ static int walIndexRecover(
       iFrame++;
 
       /* 
-      ** If mj-store is not found or not hot, mxFrameToRecover is SQLITE_MAX_U32
+      ** If mj-stored is not found or not hot, mxFrameToRecover is SQLITE_MAX_U32
       ** that no frame is ignored.
       */
       if( shouldRollback && (iFrame > mxFrameToRecover) ) break;

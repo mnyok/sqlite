@@ -2510,13 +2510,13 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
       ** Open it and check if it points at the master journal. If
       ** so, return without deleting the master journal file.
       **
-      ** If the last 9 characters of journal name is "-mj-store",
+      ** If the last 10 characters of journal name is "-mj-stored",
       ** current journal mode is wal.
       */
       int c;
 
       if( (9 <= nJournal)
-       && (0 == memcmp(&zJournal[nJournal-9], "-mj-store", 9))
+       && (0 == memcmp(&zJournal[nJournal-10], "-mj-stored", 10))
       ){
         rc = sqlite3OsOpen(pVfs, zJournal, pJournal, SQLITE_OPEN_READONLY, 0);
         if( rc!=SQLITE_OK ){
@@ -4690,7 +4690,7 @@ int sqlite3PagerOpen(
     nPathname + 8 + 2              /* zJournal */
 #ifndef SQLITE_OMIT_WAL
     + nPathname + 4 + 2            /* zWal */
-    + nPathname + 9 + 2            /* zMasterStore */
+    + nPathname + 10 + 2            /* zMasterStore */
 #endif
   );
   assert( EIGHT_BYTE_ALIGNMENT(SQLITE_INT_TO_PTR(journalFileSize)) );
@@ -4723,7 +4723,7 @@ int sqlite3PagerOpen(
 
     pPager->zWalMasterStore = &pPager->zWal[nPathname+4+1];
     memcpy(pPager->zWalMasterStore, zPathname, nPathname);
-    memcpy(&pPager->zWalMasterStore[nPathname],"-mj-store\000", 9+1);
+    memcpy(&pPager->zWalMasterStore[nPathname],"-mj-stored\0", 10+1);
     sqlite3FileSuffix3(pPager->zFilename, pPager->zMasterStore);
 #endif
     sqlite3DbFree(0, zPathname);
