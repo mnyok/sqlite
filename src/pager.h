@@ -199,7 +199,7 @@ const char *sqlite3PagerFilename(Pager*, int);
 sqlite3_vfs *sqlite3PagerVfs(Pager*);
 sqlite3_file *sqlite3PagerFile(Pager*);
 sqlite3_file *sqlite3PagerJrnlFile(Pager*);
-const char *sqlite3PagerWalMasterStorename(Pager *pPager);
+const char *sqlite3PagerWalMasterStorename(Pager*);
 const char *sqlite3PagerJournalname(Pager*);
 void *sqlite3PagerTempSpace(Pager*);
 int sqlite3PagerIsMemdb(Pager*);

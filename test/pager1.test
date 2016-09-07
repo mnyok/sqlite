@@ -531,7 +531,8 @@ tv script copy_on_mj_delete
 set ::mj_filename_length 0
 set ::mj_delete_cnt 0
 proc copy_on_mj_delete {method filename args} {
-  if {[string match *mj* [file tail $filename]]} { 
+  if {[string match *mj* [file tail $filename]]
+      && ![string match *mj-store [file tail $filename]]} {
     #
     # NOTE: Is the file name relative?  If so, add the length of the current
     #       directory.
@@ -607,14 +608,15 @@ foreach {tn1 tcl} {
     w1 { 
       PRAGMA main.synchronous=NORMAL;
       PRAGMA aux.synchronous=NORMAL;
-      PRAGMA journal_mode = WAL;
-    } 0
+      PRAGMA main.journal_mode = WAL;
+      PRAGMA aux.journal_mode = WAL;
+    } 1
     w2 { 
       PRAGMA main.synchronous=NORMAL;
       PRAGMA aux.synchronous=NORMAL;
       PRAGMA main.journal_mode=DELETE;
       PRAGMA aux.journal_mode=WAL;
-    } 0
+    } 1
     o1a { 
       PRAGMA main.synchronous=FULL;
       PRAGMA aux.synchronous=OFF;

@@ -15,7 +15,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2412"
             endingLineNumber = "2412"
-            landmarkName = "walIndexReadHdr()"
+            landmarkName = "walReadMasterJournal()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "2470"
             endingLineNumber = "2470"
-            landmarkName = "walIndexReadHdr()"
+            landmarkName = "walReadMasterJournal()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -47,7 +47,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1278"
             endingLineNumber = "1278"
-            landmarkName = "walZeroMasterStore()"
+            landmarkName = "walReadMasterJournal()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

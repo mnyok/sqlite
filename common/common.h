@@ -21,6 +21,7 @@
 
 typedef unsigned char boolean;
 
+double get_time_milisecond(void);
 
 void sql_log(void* data, int resultCode, const char* msg);
 

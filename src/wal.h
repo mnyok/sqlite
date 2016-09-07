@@ -37,7 +37,7 @@
 # define sqlite3WalUndo(x,y,z)                   0
 # define sqlite3WalSavepoint(y,z)
 # define sqlite3WalSavepointUndo(y,z)            0
-# define sqlite3WalFrames(u,v,w,x,y,z)           0
+# define sqlite3WalFrames(t,u,v,w,x,y,z)         0
 # define sqlite3WalCheckpoint(r,s,t,u,v,w,x,y,z) 0
 # define sqlite3WalCallback(z)                   0
 # define sqlite3WalExclusiveMode(y,z)            0
@@ -98,7 +98,7 @@ void sqlite3WalSavepoint(Wal *pWal, u32 *aWalData);
 int sqlite3WalSavepointUndo(Wal *pWal, u32 *aWalData);
 
 /* Write a frame or frames to the log. */
-int sqlite3WalFrames(Wal *pWal, int, PgHdr *, Pgno, int, int);
+int sqlite3WalFrames(Pager *pPager, int, PgHdr *, Pgno, int, int, const char*);
 
 /* Copy pages from the log to the database file */
 int sqlite3WalCheckpoint(
@@ -148,9 +148,9 @@ sqlite3_file *sqlite3WalFile(Wal *pWal);
 
 int sqlite3WalMxFrame(Wal *pWal);
 
-int sqlite3WalReadMasterJournal(sqlite3_file* pWalMasterStore, char* zMasterPtr, u32 nMasterPtr);
+int sqlite3WalReadMasterJournal(sqlite3_file *pWalMasterStore, char *zMasterPtr, u32 nMasterPtr);
 
-int writeWalMasterStoreFile(Pager* pPager, const char* zMaster, const char* zMasterStore);
+int writeWalMasterStoreFile(Wal *pWal, const char *zMaster);
 
 #endif /* ifndef SQLITE_OMIT_WAL */
 #endif /* _WAL_H_ */

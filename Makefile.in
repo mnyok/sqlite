@@ -1094,7 +1094,10 @@ valgrindfuzz:	fuzzcheck$(TEXT) $(FUZZDATA)
 #
 quicktest:	./testfixture$(TEXE)
 	./testfixture$(TEXE) $(TOP)/test/extraquick.test $(TESTOPTS)
-
+	
+waltest:	./testfixture$(TEXE)
+	./testfixture$(TEXE) $(TOP)/test/waltest.test $(TESTOPTS)
+	
 # This is the common case.  Run many tests that do not take too long,
 # including fuzzcheck, sqlite3_analyzer, and sqldiff tests.
 #

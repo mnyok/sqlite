@@ -763,6 +763,7 @@ SQLITE_API int SQLITE_STDCALL sqlite3_exec(
 #define SQLITE_OPEN_PRIVATECACHE     0x00040000  /* Ok for sqlite3_open_v2() */
 #define SQLITE_OPEN_WAL              0x00080000  /* VFS only */
 #define SQLITE_OPEN_WAL_MASTER_JOURNAL_STORE    0x00100000  /* VFS only */
+
 /* Reserved:                         0x00F00000 */
 
 /*
@@ -12867,7 +12868,7 @@ SQLITE_PRIVATE const char *sqlite3PagerFilename(Pager*, int);
 SQLITE_PRIVATE sqlite3_vfs *sqlite3PagerVfs(Pager*);
 SQLITE_PRIVATE sqlite3_file *sqlite3PagerFile(Pager*);
 SQLITE_PRIVATE sqlite3_file *sqlite3PagerJrnlFile(Pager*);
-SQLITE_PRIVATE const char *sqlite3PagerWalMasterStorename(Pager *pPager);
+SQLITE_PRIVATE const char *sqlite3PagerWalMasterStorename(Pager*);
 SQLITE_PRIVATE const char *sqlite3PagerJournalname(Pager*);
 SQLITE_PRIVATE void *sqlite3PagerTempSpace(Pager*);
 SQLITE_PRIVATE int sqlite3PagerIsMemdb(Pager*);

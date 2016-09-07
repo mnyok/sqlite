@@ -168,15 +168,27 @@ test_suite "veryquick" -prefix "" -description {
       *fts5corrupt* *fts5big* *fts5aj*
 ]
 
+test_suite "pager1" -prefix "" -description {
+    run pager1.test
+} -files [
+    test_set pager1.test
+]
+
+test_suite "walcrash" -prefix "" -description {
+  run walcrash.test
+} -files [
+  test_set walcrash.test
+]
+
 test_suite "extraquick" -prefix "" -description {
   "Extra" quick test suite. Runs in a few minutes on a workstation.
   This test suite is the same as the "veryquick" tests, except that
   slower tests are omitted.
 } -files [
   test_set $allquicktests -exclude *malloc* *ioerr* *fault* *bigfile* *_err* \
-     wal3.test fts4merge* sort2.test mmap1.test walcrash* \
+     wal3.test fts4merge* sort2.test mmap1.test \
      percentile.test where8m.test walcksum.test savepoint3.test \
-     fuzzer1.test fuzzer3.test fts3expr3.test
+     fuzzer1.test fuzzer3.test fts3expr3.test -include walcrash.test
 ]
 
 test_suite "mmap" -prefix "mm-" -description {
