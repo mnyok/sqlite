@@ -112,8 +112,8 @@ for {set i 1} {$i < $REPEATS} {incr i} {
 # walcrash-3.*
 #
 for {set i 1} {$i < $REPEATS} {incr i} {
-  forcedelete test.db test.db-wal test.db-shm test.db-mj-store
-  forcedelete test2.db test2.db-wal test2.db-shm test2.db-mj-store
+  forcedelete test.db test.db-wal test.db-shm test.db-mj-stored
+  forcedelete test2.db test2.db-wal test2.db-shm test2.db-mj-stored
 
   sqlite3 db test.db
   

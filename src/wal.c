@@ -1170,7 +1170,7 @@ int writeWalMasterStoreFile(Wal* pWal, const char *zMaster){
 
 /*
 ** This function attempts to read a master journal file name and mxFrame value
-** from the master journal store(mj-store) file.
+** from the master journal store(mj-stored) file.
 **
 ** See comments above writeWalMasterStoreFile() for the format used to
 ** store a master journal file name at master journal store file.
@@ -1322,7 +1322,7 @@ int walMxFrameFromMasterStore(
   
   /*
   ** Check the wal master store file exist in path Rollback   database only when
-  ** error doesn't occur and mj-store file exist.
+  ** error doesn't occur and mj-stored file exist.
   */
 
   rc = walCheckMasterStoreExistenceAndOpenIfExists(pWal, &res);
@@ -1347,7 +1347,7 @@ int walMxFrameFromMasterStore(
 
   rc = walReadMasterJournal(pWal->pWalMasterStoreFd, *zMasterJournalName, nMasterJournalName, &storedMxFrame);
 
-  if( rc!=SQLITE_OK || (zMasterJournalName[0] == 0)){ //error occured on reading or mj-store is corrupted or magic number is zeroed out.
+  if( rc!=SQLITE_OK || (zMasterJournalName[0] == 0)){ //error occured on reading or mj-stored is corrupted or magic number is zeroed out.
     goto should_not_rollback;
   }
 
@@ -1501,7 +1501,7 @@ static int walIndexRecover(
       iFrame++;
 
       /* 
-      ** If mj-store is not found or not hot, mxFrameToRecover is SQLITE_MAX_U32
+      ** If mj-stored is not found or not hot, mxFrameToRecover is SQLITE_MAX_U32
       ** that no frame is ignored.
       */
       if( shouldRollback && (iFrame > mxFrameToRecover) ) break;
