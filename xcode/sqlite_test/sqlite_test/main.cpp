@@ -123,19 +123,19 @@ void transaction(){
     create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
     
     
-    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
-    sqlite3_close(db2);
-    
-    sql_execute(db,"attach 'test2.db' as aux");
-    sql_execute(db,"begin");
-    
+//    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
+//    sqlite3_close(db2);
+  
+//    sql_execute(db,"attach 'test2.db' as aux");
+//    sql_execute(db,"begin");
+  
     for(int i = 0 ; i < 10 ; i ++){
         
         sql_execute(db, "insert into t1 values (randomblob(4),randomblob(4),randomblob(4))");
-        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
+//        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
     }
-    sql_execute(db,"commit");
-    
+//    sql_execute(db,"commit");
+  
     
     sqlite3_close(db);
 }
