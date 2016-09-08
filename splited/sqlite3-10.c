@@ -1273,33 +1273,33 @@ finish:
   
   return rc;
 }
-int walCheckMasterStoreExistenceAndOpenIfExists(Wal *pWal, int* resOut){
+int walCheckMasterStoreOpen(Wal *pWal, int* wasAlreadyOpened){
   
   int rc = SQLITE_OK;
-  int res;
+//  int res;
   
   if(pWal->pWalMasterStoreFd && isOpen(pWal->pWalMasterStoreFd)){
-    *resOut = 1;
+    *wasAlreadyOpened = 1;
     return rc;
   }
 
-  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS |SQLITE_ACCESS_READWRITE, &res);
+//  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS |SQLITE_ACCESS_READWRITE, &res);
+//  
+//  if(rc!=SQLITE_OK){
+//    *resOut = 0;
+//    return rc;
+//  }
+//  
+//  if(res){
+  rc = walOpenMasterStoreFile(pWal);
   
   if(rc!=SQLITE_OK){
-    *resOut = 0;
     return rc;
   }
   
-  if(res){
-     rc = walOpenMasterStoreFile(pWal);
-     
-     if(rc!=SQLITE_OK){
-       return rc;
-     }
-   }
 
-  *resOut = res;
-  
+  *wasAlreadyOpened = 0;
+
   return rc;
 
 }
@@ -1316,7 +1316,8 @@ int walMxFrameFromMasterStore(
 ){
   int rc = SQLITE_OK;
 //  sqlite3_file *pMasterStore = 0;
-  int res = 0;
+  int wasAlreadyOpened = 0;
+  int res;
   u32 storedMxFrame = SQLITE_MAX_U32;
   i64 nMasterJournalName = 0;
   
@@ -1326,9 +1327,9 @@ int walMxFrameFromMasterStore(
   ** error doesn't occur and mj-stored file exist.
   */
 
-  rc = walCheckMasterStoreExistenceAndOpenIfExists(pWal, &res);
+  rc = walCheckMasterStoreOpen(pWal, &wasAlreadyOpened);
  
-  if( rc!=SQLITE_OK || !res ){
+  if( rc!=SQLITE_OK || wasAlreadyOpened ){
     goto should_not_rollback;
   }
 
