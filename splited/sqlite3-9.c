@@ -173,7 +173,7 @@ SQLITE_PRIVATE sqlite3_file *sqlite3WalFile(Wal *pWal);
 
 SQLITE_PRIVATE int sqlite3WalMxFrame(Wal *pWal);
 
-SQLITE_PRIVATE int sqlite3WalReadMasterJournal(sqlite3_file *pWalMasterStore, char *zMasterPtr, u32 nMasterPtr);
+SQLITE_PRIVATE int sqlite3WalReadMasterJournal(sqlite3_file *pWalMasterStore, char *zMasterPtr, u32 nMasterPtr, int* isValid);
 
 int writeWalMasterStoreFile(Wal *pWal, const char *zMaster);
 
@@ -2675,7 +2675,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
       ** current journal mode is wal.
       */
       int c;
-
+      int isValid = 1;
       if( (9 <= nJournal)
        && (0 == memcmp(&zJournal[nJournal-10], "-mj-stored", 10))
       ){
@@ -2684,7 +2684,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
           goto delmaster_out;
         }
 
-        rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+        rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr,&isValid);
       }else{
       
         const int flags = (SQLITE_OPEN_READONLY|SQLITE_OPEN_MAIN_JOURNAL);
@@ -2701,7 +2701,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
         goto delmaster_out;
       }
 
-      c = zMasterPtr[0]!=0 && strcmp(zMasterPtr, zMaster)==0;
+      c = isValid && zMasterPtr[0]!=0 && strcmp(zMasterPtr, zMaster)==0;
       if( c ){
         /* We have a match. Do not delete the master journal file. */
         goto delmaster_out;
@@ -4882,7 +4882,7 @@ SQLITE_PRIVATE int sqlite3PagerOpen(
     memcpy(&pPager->zWal[nPathname], "-wal\000", 4+1);
     sqlite3FileSuffix3(pPager->zFilename, pPager->zWal);
 
-    pPager->zWalMasterStore = &pPager->zWal[nPathname+8+1+4+1];
+    pPager->zWalMasterStore = &pPager->zWal[nPathname+4+1];
     memcpy(pPager->zWalMasterStore, zPathname, nPathname);
     memcpy(&pPager->zWalMasterStore[nPathname],"-mj-stored\0", 10+1);
     sqlite3FileSuffix3(pPager->zFilename, pPager->zMasterStore);

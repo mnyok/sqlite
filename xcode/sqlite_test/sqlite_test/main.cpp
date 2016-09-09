@@ -90,6 +90,19 @@ void read_both(){
     sqlite3_close(db);
 }
 
+void read_both_twice(){
+  sqlite3* db;
+
+  sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
+
+  sql_execute(db,"attach 'test2.db' as aux");
+
+  sql_execute(db, "select * from t1 except select * from t2",true);
+  sql_execute(db, "select * from t1 except select * from t2",true);
+
+  sqlite3_close(db);
+}
+
 void read_twice(){
     
     
@@ -261,11 +274,11 @@ int main(){
     //    checkpoint_only_test();
     //    checkpoint_transaction_test();
     //    checkpoint_test();
-//        read_both();
+        read_both_twice();
 //    read();
 //    read_twice();
 //        read();
-        transaction();
+//        transaction();
   
     
     
