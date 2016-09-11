@@ -2323,14 +2323,15 @@ int sqlite3WalClose(
     if( isDelete ){
       sqlite3BeginBenignMalloc();
       sqlite3OsDelete(pWal->pVfs, pWal->zWalName, 0);
-      if(pWal->pWalMasterStoreFd){
-        // int size = 0;
-        // sqlite3OsFileSize(pWal->pWalMasterStoreFd, &size);
-        //printf("%s wal close, wal master store is opened = %d, size = %d\n",pWal->zWalName,isOpen(pWal->pWalMasterStoreFd),size);
+      sqlite3EndBenignMalloc();
+    }
+
+    if(pWal->pWalMasterStoreFd){
+      // int size = 0;
+      // sqlite3OsFileSize(pWal->pWalMasterStoreFd, &size);
+      //printf("%s wal close, wal master store is opened = %d, size = %d\n",pWal->zWalName,isOpen(pWal->pWalMasterStoreFd),size);
       sqlite3OsCloseFree(pWal->pWalMasterStoreFd);
       sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0);
-    }
-      sqlite3EndBenignMalloc();
     }
     WALTRACE(("WAL%p: closed\n", pWal));
     sqlite3_free((void *)pWal->apWiData);

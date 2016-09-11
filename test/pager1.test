@@ -721,7 +721,7 @@ foreach {tn1 tcl} {
         sqlite3 db $prefix
       }
       execsql "ATTACH '${prefix}2' AS aux"
-      glob -nocomplain ${prefix}-mj*
+      glob -nocomplain ${prefix}-mj????????
     } {}
     do_execsql_test pager1-4.4.$tn.8 {
       SELECT * FROM a
