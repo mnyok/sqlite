@@ -1207,8 +1207,11 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
 
 
   if(szW < (4 + 4 + 4 + 8)){
-    goto not_valid;
+     printf("size not valid\n");
+
+     goto not_valid;
   }
+
 
   if(SQLITE_OK != (rc = sqlite3OsRead(pMasterStore, aMagic, 8, szW-8))){
 
@@ -1217,6 +1220,7 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
   }
 
   if(0 != memcmp(aMagic, aWalMasterStoreMagic, 8)){
+    printf("magic number not valid\n");
     goto not_valid;
   }
 
@@ -1227,6 +1231,7 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
   }
 
   if(nMasterPtrBufferLength <= nMasterJournalName){
+    printf("master journal name length not valid\n");
     goto not_valid;
   }
 
@@ -1246,6 +1251,7 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
     ** If the checksum doesn't match, then one or more of the disk sectors
     ** containing the master journal filename is corrupted.
     */
+    printf("checksum not valid\n");
     goto not_valid;
 
   }else{
@@ -1260,6 +1266,8 @@ int walReadMasterJournal(sqlite3_file *pMasterStore, char *zMasterPtr, u32 nMast
 not_valid:
   *isValid = 0;
 
+
+
   return rc;
 
 error:
@@ -1267,6 +1275,7 @@ error:
 
   return rc;
 }
+
 
 int walZeroMasterStore(Wal* pWal){
   
@@ -1299,36 +1308,22 @@ finish:
   
   return rc;
 }
-int walCheckMasterStoreOpen(Wal *pWal, int* wasAlreadyOpened){
+int walCheckMasterStoreOpen(Wal *pWal){
+                            //, int* wasAlreadyOpened){
   
   int rc = SQLITE_OK;
-//  int res;
   
   if(pWal->pWalMasterStoreFd && isOpen(pWal->pWalMasterStoreFd)){
-    *wasAlreadyOpened = 1;
+//    *wasAlreadyOpened = 1;
     return rc;
   }
 
-//  rc = sqlite3OsAccess(pWal->pVfs, pWal->zWalMasterStore, SQLITE_ACCESS_EXISTS |SQLITE_ACCESS_READWRITE, &res);
-//  
-//  if(rc!=SQLITE_OK){
-//    *resOut = 0;
-//    return rc;
-//  }
-//  
-//  if(res){
   rc = walOpenMasterStoreFile(pWal);
   
-  if(rc!=SQLITE_OK){
-    return rc;
-  }
-  
-
-  *wasAlreadyOpened = 0;
-
   return rc;
 
 }
+
 
 /*
 ** Read mxFrame value from master journal store file. Similar to walReadMasterJournal
@@ -1353,12 +1348,13 @@ int walMxFrameFromMasterStore(
   ** error doesn't occur and mj-stored file exist.
   */
 
-  rc = walCheckMasterStoreOpen(pWal, &wasAlreadyOpened);
- 
-  if( rc!=SQLITE_OK || wasAlreadyOpened ){
-    goto should_not_rollback;
-  }
+  rc = walCheckMasterStoreOpen(pWal);
+                               //, &wasAlreadyOpened);
 
+//  printf("%s walAlreadyOpened = %d\n",pWal->zWalName,wasAlreadyOpened);
+  if( rc!=SQLITE_OK){
+      goto should_not_rollback;
+  }
 
   /*
   ** Read mxFrame value and master journal name from master store file.
@@ -1375,6 +1371,7 @@ int walMxFrameFromMasterStore(
 
   rc = walReadMasterJournal(pWal->pWalMasterStoreFd, *zMasterJournalName, nMasterJournalName, &storedMxFrame,&isValid);
 
+  printf("%s isValid = %d master journal name = %s\n",pWal->zWalName,isValid,*zMasterJournalName);
   if( rc!=SQLITE_OK || (zMasterJournalName[0] == 0) || !isValid){ //error occured on reading or mj-stored is corrupted or magic number is zeroed out.
     goto should_not_rollback;
   }
@@ -1406,6 +1403,7 @@ should_not_rollback:
   return rc;
 
 }
+
 
 
 
@@ -2280,6 +2278,7 @@ SQLITE_PRIVATE int sqlite3WalClose(
 ){
   int rc = SQLITE_OK;
   if( pWal ){
+      printf("%s close\n",pWal->zWalName);
     int isDelete = 0;             /* True to unlink wal and wal-index files */
 
     /* If an EXCLUSIVE lock can be obtained on the database file (using the
@@ -2326,9 +2325,12 @@ SQLITE_PRIVATE int sqlite3WalClose(
       sqlite3BeginBenignMalloc();
       sqlite3OsDelete(pWal->pVfs, pWal->zWalName, 0);
       if(pWal->pWalMasterStoreFd){
-        sqlite3OsCloseFree(pWal->pWalMasterStoreFd);
-        sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0);
-      }
+        int size = 0;
+        sqlite3OsFileSize(pWal->pWalMasterStoreFd, &size);
+        printf("%s wal close, wal master store is opened = %d, size = %d\n",pWal->zWalName,isOpen(pWal->pWalMasterStoreFd),size);
+      sqlite3OsCloseFree(pWal->pWalMasterStoreFd);
+      sqlite3OsDelete(pWal->pVfs, pWal->zWalMasterStore, 0);
+    }
       sqlite3EndBenignMalloc();
     }
     WALTRACE(("WAL%p: closed\n", pWal));
@@ -2439,6 +2441,9 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
   */
   badHdr = (page0 ? walIndexTryHdr(pWal, pChanged) : 1);
   rc = walMxFrameFromMasterStore(pWal, &mxFrameToRecover, &shouldRollback, &zMasterJournalName);
+
+  printf("%s shouldRollback = %d\n",pWal->zWalName,shouldRollback);
+
   if( rc!=SQLITE_OK ){
     return rc;
   }
@@ -2477,23 +2482,26 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
           */
           if( shouldRollback ){
             if(iOffset != 0){ /* At least WAL header is not corrupted */
-            if( (SQLITE_OK!=(rc = sqlite3OsTruncate(pWal->pWalFd, iOffset)))
-             || (SQLITE_OK!=(rc = sqlite3OsSync(pWal->pWalFd, pWal->syncFlags)))){
-              sqlite3_free(zMasterJournalName);
+              if( (SQLITE_OK!=(rc = sqlite3OsTruncate(pWal->pWalFd, iOffset)))
+               || (SQLITE_OK!=(rc = sqlite3OsSync(pWal->pWalFd, pWal->syncFlags)))){
+                sqlite3_free(zMasterJournalName);
 
-              goto rollback_out;
+                goto rollback_out;
 
-            }
+              }
             }
 
             /* Zero wal master store */
             rc = walZeroMasterStore(pWal);
+            printf("%s didZeroMasterStore\n",pWal->zWalName);
             if( rc!=SQLITE_OK ){
               goto rollback_out;
             }
           }
 
           /* Delete wal master jounal file */
+
+          printf("%s deleting master journal %s\n",pWal->zWalName,zMasterJournalName);
           if( zMasterJournalName ){
             rc = pager_delmaster(pWal->pVfs, zMasterJournalName);
           }
@@ -2519,6 +2527,7 @@ static int walIndexReadHdr(Wal *pWal, int *pChanged){
 
   return rc;
 }
+
 
 /*
 ** This is the value that walTryBeginRead returns when it needs to
