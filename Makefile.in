@@ -1066,7 +1066,7 @@ TESTFIXTURE_SRC += $(TESTFIXTURE_SRC$(USE_AMALGAMATION))
 
 testfixture$(TEXE):	$(TESTFIXTURE_SRC)
 	$(LTLINK) -DSQLITE_NO_SYNC=1 $(TEMP_STORE) $(TESTFIXTURE_FLAGS) \
-		-o $@ $(TESTFIXTURE_SRC) $(LIBTCL) $(TLIBS)
+		-o $@ $(TESTFIXTURE_SRC) $(LIBTCL) $(TLIBS) -g
 
 # A very detailed test running most or all test cases
 fulltest:	$(TESTPROGS) fuzztest

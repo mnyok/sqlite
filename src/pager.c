@@ -2514,7 +2514,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
       ** current journal mode is wal.
       */
       int c;
-
+      int isValid = 1;
       if( (9 <= nJournal)
        && (0 == memcmp(&zJournal[nJournal-10], "-mj-stored", 10))
       ){
@@ -2523,7 +2523,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
           goto delmaster_out;
         }
 
-        rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr);
+        rc = sqlite3WalReadMasterJournal(pJournal, zMasterPtr, nMasterPtr,&isValid);
       }else{
       
         const int flags = (SQLITE_OPEN_READONLY|SQLITE_OPEN_MAIN_JOURNAL);
@@ -2540,7 +2540,7 @@ static int pager_delmaster(sqlite3_vfs *pVfs, const char *zMaster){
         goto delmaster_out;
       }
 
-      c = zMasterPtr[0]!=0 && strcmp(zMasterPtr, zMaster)==0;
+      c = isValid && zMasterPtr[0]!=0 && strcmp(zMasterPtr, zMaster)==0;
       if( c ){
         /* We have a match. Do not delete the master journal file. */
         goto delmaster_out;

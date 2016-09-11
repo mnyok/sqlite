@@ -90,6 +90,19 @@ void read_both(){
     sqlite3_close(db);
 }
 
+void read_both_twice(){
+  sqlite3* db;
+
+  sqlite3_open_v2("test.db", &db, SQLITE_OPEN_READWRITE, nil);
+
+  sql_execute(db,"attach 'test2.db' as aux");
+
+  sql_execute(db, "select * from t1 except select * from t2",true);
+  sql_execute(db, "select * from t1 except select * from t2",true);
+
+  sqlite3_close(db);
+}
+
 void read_twice(){
     
     
@@ -123,20 +136,20 @@ void transaction(){
     create_db_and_make_table_and_set_journaling(&db, "test.db", "t1", WAL);
     
     
-//    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
-//    sqlite3_close(db2);
-  
-//    sql_execute(db,"attach 'test2.db' as aux");
-//    sql_execute(db,"begin");
-  
+    create_db_and_make_table_and_set_journaling(&db2, "test2.db", "t2", WAL);
+    sqlite3_close(db2);
+
+    sql_execute(db,"attach 'test2.db' as aux");
+    sql_execute(db,"begin");
+
     for(int i = 0 ; i < 10 ; i ++){
         
         sql_execute(db, "insert into t1 values (randomblob(4),randomblob(4),randomblob(4))");
-//        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
+        sql_execute(db, "insert into aux.t2 values (randomblob(4),randomblob(4),randomblob(4))");
     }
-//    sql_execute(db,"commit");
-  
-    
+    sql_execute(db,"commit");
+
+
     sqlite3_close(db);
 }
 
@@ -261,12 +274,12 @@ int main(){
     //    checkpoint_only_test();
     //    checkpoint_transaction_test();
     //    checkpoint_test();
-//        read_both();
+//        read_both_twice();
 //    read();
 //    read_twice();
 //        read();
         transaction();
-  
+
     
     
     
