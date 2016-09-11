@@ -66,10 +66,10 @@ for {set i 1} {$i < $REPEATS} {incr i} {
   } {1 {child process exited abnormally}}
 
 #db close
+# anykey
 
   do_test walcrash-3.$i.2 {
     sqlite3 db test.db
-    exit
     execsql { 
       ATTACH 'test2.db' AS aux;
       SELECT * FROM t1 EXCEPT SELECT * FROM t2;
