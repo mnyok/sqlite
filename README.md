@@ -1,6 +1,6 @@
 # Atomic Multi-database Transaction of WAL Journaling Mode in SQLite
 
-[Read paper about it here](https://drive.google.com/file/d/0B5vadFDZKX2pbmtYY1NyMEx0c00/view)
+[Read the paper about it here](https://drive.google.com/file/d/0B5vadFDZKX2pbmtYY1NyMEx0c00/view)
 
 This project solves the problem of WAL(Write-Ahead Logging) that transactions involving changes with multiple attached databases do not guarantee atomicity across all databases as a set in recovery.
 
