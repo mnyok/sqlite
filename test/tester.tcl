@@ -1518,7 +1518,7 @@ proc crashsql {args} {
   }
   if {[string length $sql]>0} {
     puts $f "db eval {"
-    puts $f $sql
+    puts $f   "$sql"
     puts $f "}"
   }
   close $f

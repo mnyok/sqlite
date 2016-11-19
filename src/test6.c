@@ -20,7 +20,7 @@
 
 #ifndef SQLITE_OMIT_DISKIO  /* This file is a no-op if disk I/O is disabled */
 
-// #define TRACE_CRASHTEST
+/* #define TRACE_CRASHTEST */
 
 typedef struct CrashFile CrashFile;
 typedef struct CrashGlobal CrashGlobal;
@@ -215,7 +215,7 @@ static int writeListSync(CrashFile *pFile, int isCrash){
   }
 
 #ifdef TRACE_CRASHTEST
-  // printf("Sync %s (is %s crash)\n", pFile->zName, (isCrash?"a":"not a"));
+  printf("Sync %s (is %s crash)\n", pFile->zName, (isCrash?"a":"not a"));
 #endif
 
   ppPtr = &g.pWriteList;
@@ -282,7 +282,7 @@ static int writeListSync(CrashFile *pFile, int isCrash){
         *ppPtr = pWrite->pNext;
 #ifdef TRACE_CRASHTEST
         if( isCrash ){
-        //   printf("Writing %d bytes @ %d (%s)\n",
+            printf("Writing %d bytes @ %d (%s)\n",
             pWrite->nBuf, (int)pWrite->iOffset, pWrite->pFile->zName
           );
         }
