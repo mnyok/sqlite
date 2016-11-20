@@ -32,6 +32,9 @@ make fulltest # for the full test which takes HOURS.
 
 
 ## Recovery
+
+함수 이름에 약간의 변경이 있으니 `git pull`로 최신 커밋을 받아서 소스를 확인하는 것이 좋습니다.
+
 src/wal.c 에 대부분의 WAL 복구에 관한 함수들이 모여있습니다.
 
 Multi-database transaction을 수행할때 WAL은 `sqlite3WalFrames()`를 호출하고, 트랜잭션을 시작하기 전 wal파일의 프레임 갯수, 즉 기존 상태를 mj-stored 파일에 `walWriteMasterStoreFile()`를 통해 저장하게 됩니다. transaction이 무사히 끝나게 되면 `walZeroMasterStore()`를 호출하여 다음번에 사용 되지 않게 하고, 중간에 크래쉬가 나게 된다면 다음번 db를 open 하여 처음으로 read를 시작할때 복구를 시작하게 됩니다.
