@@ -1107,7 +1107,7 @@ int walOpenMasterStoreFile(Wal* pWal){
 ** If zMaster is a NULL pointer (occurs for a single database transaction),
 ** this call is a no-op.
 */
-int writeWalMasterStoreFile(Wal* pWal, const char *zMaster){
+int walWriteMasterStoreFile(Wal* pWal, const char *zMaster){
   int rc = SQLITE_OK;
   sqlite3_file *pMasterStore = 0;
   int nMaster = 0;
@@ -1164,7 +1164,7 @@ int writeWalMasterStoreFile(Wal* pWal, const char *zMaster){
 ** This function attempts to read a master journal file name and mxFrame value
 ** from the master journal store(mj-stored) file.
 **
-** See comments above writeWalMasterStoreFile() for the format used to
+** See comments above walWriteMasterStoreFile() for the format used to
 ** store a master journal file name at master journal store file.
 **
 ** zMaster must point to a buffer of at least nMaster bytes allocated by
@@ -1348,7 +1348,6 @@ int walMxFrameFromMasterStore(
     rc = SQLITE_NOMEM_BKPT;
     goto should_not_rollback;
   }
-
   rc = walReadMasterJournal(pWal->pWalMasterStoreFd, *zMasterJournalName, nMasterJournalName, &storedMxFrame,&isValid);
 
 
@@ -3384,7 +3383,7 @@ int sqlite3WalFrames(
   }
 
   /* Write wal master store file */
-  rc = writeWalMasterStoreFile(pPager->pWal, zMaster);
+  rc = walWriteMasterStoreFile(pPager->pWal, zMaster);
   if( rc!=SQLITE_OK ){
     return rc;
   }
